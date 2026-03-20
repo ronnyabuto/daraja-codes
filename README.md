@@ -3,7 +3,7 @@
 The missing error code reference for Safaricom's Daraja M-Pesa API.
 
 ## Live site
-https://officialnyabuto.github.io/daraja-codes
+https://ronnyabuto.github.io/daraja-codes
 
 ## How to add an error code
 1. Fork this repo

@@ -1,25 +1,30 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Daraja Error Codes — M-Pesa API Error Reference</title>
 
-  <meta name="description" content="Searchable reference for every Safaricom Daraja M-Pesa API error code. Covers STK Push, C2B, B2C, HTTP and Go-Live errors — with exact causes and copy-paste fixes.">
-  <meta name="keywords" content="daraja api error codes, mpesa error 1037, mpesa error 1032, stk push error codes, safaricom daraja errors, mpesa api errors, daraja 500.001.1001, daraja 404.001.03, mpesa b2c error 2001, daraja error reference">
+  <meta name="description"
+    content="Searchable reference for every Safaricom Daraja M-Pesa API error code. Covers STK Push, C2B, B2C, HTTP and Go-Live errors — with exact causes and copy-paste fixes.">
+  <meta name="keywords"
+    content="daraja api error codes, mpesa error 1037, mpesa error 1032, stk push error codes, safaricom daraja errors, mpesa api errors, daraja 500.001.1001, daraja 404.001.03, mpesa b2c error 2001, daraja error reference">
   <meta name="robots" content="index, follow">
-  <link rel="canonical" href="https://officialnyabuto.github.io/daraja-codes">
+  <link rel="canonical" href="https://ronnyabuto.github.io/daraja-codes">
 
   <!-- Open Graph — controls how the link looks when shared on WhatsApp, Telegram, Twitter, LinkedIn -->
   <meta property="og:title" content="Daraja Error Codes — M-Pesa API Error Reference">
-  <meta property="og:description" content="The missing error code reference for Safaricom's Daraja M-Pesa API. Search by code, message, or API type.">
+  <meta property="og:description"
+    content="The missing error code reference for Safaricom's Daraja M-Pesa API. Search by code, message, or API type.">
   <meta property="og:type" content="website">
-  <meta property="og:url" content="https://officialnyabuto.github.io/daraja-codes">
+  <meta property="og:url" content="https://ronnyabuto.github.io/daraja-codes">
 
   <!-- Twitter/X card -->
   <meta name="twitter:card" content="summary">
   <meta name="twitter:title" content="Daraja Error Codes — M-Pesa API Error Reference">
-  <meta name="twitter:description" content="The missing error code reference for Safaricom's Daraja M-Pesa API. Search by code, message, or API type.">
+  <meta name="twitter:description"
+    content="The missing error code reference for Safaricom's Daraja M-Pesa API. Search by code, message, or API type.">
 
   <!-- Structured data for Google and AI crawlers -->
   <script type="application/ld+json">
@@ -28,7 +33,7 @@
     "@type": "TechArticle",
     "name": "Daraja M-Pesa API Error Code Reference",
     "description": "A searchable reference for every Safaricom Daraja M-Pesa API error code, covering STK Push, C2B, B2C, HTTP and Go-Live errors with causes and fixes.",
-    "url": "https://officialnyabuto.github.io/daraja-codes",
+    "url": "https://ronnyabuto.github.io/daraja-codes",
     "author": {
       "@type": "Person",
       "name": "Your Name Here"
@@ -48,7 +53,9 @@
   </script>
 
   <style>
-    *, *::before, *::after {
+    *,
+    *::before,
+    *::after {
       box-sizing: border-box;
     }
 
@@ -313,24 +320,21 @@
     }
   </style>
 </head>
+
 <body>
   <div class="container">
 
     <header class="site-header">
       <h1>Daraja Error Codes</h1>
-      <p class="subtitle">The missing error code reference for Safaricom's Daraja M-Pesa API. Search by code, message, or API type.</p>
-      <p class="launch-note">10 confirmed errors at launch — open an issue on GitHub to add more.</p>
+      <p class="subtitle">The missing error code reference for Safaricom's Daraja M-Pesa API. Search by code, message,
+        or API type.</p>
+      <p class="launch-note"><span id="error-count">14</span> confirmed errors — open an issue on GitHub to add more.
+      </p>
     </header>
 
     <div class="controls">
-      <input
-        type="text"
-        id="search"
-        placeholder="Search by code, message, or description..."
-        autofocus
-        autocomplete="off"
-        spellcheck="false"
-      >
+      <input type="text" id="search" placeholder="Search by code, message, or description..." autofocus
+        autocomplete="off" spellcheck="false">
       <div class="filter-row" id="filter-row">
         <button class="filter-btn active" data-filter="All">All</button>
         <button class="filter-btn" data-filter="STK Push">STK Push</button>
@@ -346,7 +350,8 @@
 
     <footer class="site-footer">
       <p>Built to fill a gap in the Daraja developer ecosystem.</p>
-      <p><a href="https://github.com" target="_blank" rel="noopener noreferrer">View on GitHub</a></p>
+      <p><a href="https://github.com/ronnyabuto/daraja-codes" target="_blank" rel="noopener noreferrer">View on
+          GitHub</a></p>
       <p>Data sourced from community documentation and verified developer reports.</p>
     </footer>
 
@@ -355,6 +360,11 @@
   <script src="errors.js"></script>
   <script>
     (function () {
+      var errorCountEl = document.getElementById("error-count");
+      if (errorCountEl && typeof ERRORS !== "undefined") {
+        errorCountEl.textContent = ERRORS.length;
+      }
+
       var currentQuery = "";
       var currentFilter = "All";
 
@@ -392,17 +402,17 @@
 
         return (
           '<div class="card">' +
-            '<div class="card-top-row">' +
-              '<span class="code">' + escapeHtml(entry.code) + "</span>" +
-              '<span class="api-badge api-' + escapeHtml(slug) + '">' + escapeHtml(entry.api) + "</span>" +
-            "</div>" +
-            '<h2 class="card-title">' + escapeHtml(entry.title) + "</h2>" +
-            '<p class="description">' + escapeHtml(entry.description) + "</p>" +
-            '<div class="section-label">Likely Causes</div>' +
-            "<ul>" + causesHtml + "</ul>" +
-            '<div class="section-label">Fix</div>' +
-            '<p class="fix-text">' + escapeHtml(entry.fix) + "</p>" +
-            notesHtml +
+          '<div class="card-top-row">' +
+          '<span class="code">' + escapeHtml(entry.code) + "</span>" +
+          '<span class="api-badge api-' + escapeHtml(slug) + '">' + escapeHtml(entry.api) + "</span>" +
+          "</div>" +
+          '<h2 class="card-title">' + escapeHtml(entry.title) + "</h2>" +
+          '<p class="description">' + escapeHtml(entry.description) + "</p>" +
+          '<div class="section-label">Likely Causes</div>' +
+          "<ul>" + causesHtml + "</ul>" +
+          '<div class="section-label">Fix</div>' +
+          '<p class="fix-text">' + escapeHtml(entry.fix) + "</p>" +
+          notesHtml +
           "</div>"
         );
       }
@@ -469,4 +479,5 @@
     })();
   </script>
 </body>
+
 </html>
