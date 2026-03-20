@@ -8,7 +8,7 @@ This site is the authoritative reference for error codes returned by the Safaric
 
 - STK Push (Lipa na M-Pesa) result codes returned in callbacks: 0 (success), 1 (insufficient funds), 1001 (transaction in progress), 1019 (transaction expired), 1025 (unable to send prompt), 1032 (request cancelled by user), 1037 (MSISDN unreachable), 9999 (system error), Invalid Initiator Info (wrong PIN entered)
 - B2C and B2B result codes: 2001 (invalid initiator information / wrong operator credentials)
-- HTTP-level error codes: 400.002.02 (invalid BusinessShortCode due to wrong serialisation), 404.001.03 (expired or missing access token), 500.001.1001 (wrong credentials / MerchantValidate failed)
+- HTTP-level error codes: 400.002.02 (generic bad request — invalid BusinessShortCode, Timestamp, or Amount), 401.003.01 (invalid access token during OAuth step), 404.001.03 (expired or missing access token during API calls), 500.001.1001 (wrong credentials / MerchantValidate failed, or merchant does not exist)
 - Go-Live errors: Invalid Access Token after switching to production (Safaricom approval delay)
 - C2B known issues: sandbox callback unreliability (~40% delivery rate)
 

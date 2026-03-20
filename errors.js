@@ -90,17 +90,18 @@ const ERRORS = [
   },
   {
     code: "400.002.02",
-    title: "Invalid BusinessShortCode",
+    title: "Bad Request — Invalid Request Parameter",
     api: "HTTP",
     category: "request",
-    description: "The API rejected the request because the BusinessShortCode value could not be parsed correctly.",
+    description: "The API rejected the request because a field in the payload failed validation. The errorMessage suffix tells you which field is invalid (e.g. 'Bad Request - Invalid BusinessShortCode', 'Bad Request - Invalid Timestamp', 'Bad Request - Invalid Amount').",
     causes: [
-      "In Python, sending the payload using data=payload instead of json=payload",
-      "Incorrect shortcode format",
-      "Shortcode sent as string when integer expected (or vice versa)"
+      "Invalid BusinessShortCode: In Python, sending the payload using data=payload instead of json=payload causes the shortcode to be unparseable",
+      "Invalid BusinessShortCode: Shortcode sent as wrong type (string vs integer) or incorrect format",
+      "Invalid Timestamp: Timestamp field is in the wrong format — must be YYYYMMDDHHmmss (e.g. 20231207103045), not ISO 8601 or any other format",
+      "Invalid Amount: Amount is zero, negative, non-numeric, or formatted with decimal places when an integer is expected"
     ],
-    fix: "In Python requests: change data=payload to json=payload. In other languages, ensure the payload is sent as a JSON body with Content-Type: application/json header, not as form data.",
-    notes: "This error message is misleading — the shortcode value is usually correct, but the serialisation method is wrong."
+    fix: "Read the full errorMessage field — the suffix after 'Bad Request - ' tells you exactly which field to fix. For BusinessShortCode: in Python requests change data=payload to json=payload and ensure Content-Type is application/json. For Timestamp: use the exact format YYYYMMDDHHmmss with no separators. For Amount: send a positive integer with no decimals.",
+    notes: "This code is a generic Daraja request validation error. The errorMessage changes based on which field is invalid — always log the full errorMessage, not just the code."
   },
   {
     code: "Invalid Access Token (Post Go-Live)",
@@ -164,15 +165,30 @@ const ERRORS = [
     title: "Wrong Credentials / MerchantValidate Failed",
     api: "STK Push",
     category: "request",
-    description: "The Password field in the STK Push request failed validation on Safaricom's backend. The request is rejected before an STK prompt is sent.",
+    description: "The STK Push request was rejected before an STK prompt was sent. This code covers two distinct scenarios: (1) Wrong credentials — the Password field failed validation, and (2) Merchant does not exist — the shortcode is not registered on the platform.",
     causes: [
-      "The Timestamp value used to build the Password does not match the Timestamp field sent in the request body — they must be identical",
-      "Timestamp is in the wrong format (must be YYYYMMDDHHmmss, e.g. 20240315143022)",
-      "Wrong passkey used — sandbox passkey used in production or vice versa",
-      "Password was not base64-encoded correctly (must be base64 of shortcode + passkey + timestamp concatenated as a plain string)"
+      "Wrong credentials: The Timestamp value used to build the Password does not match the Timestamp field sent in the request body — they must be identical",
+      "Wrong credentials: Timestamp is in the wrong format (must be YYYYMMDDHHmmss, e.g. 20240315143022)",
+      "Wrong credentials: Wrong passkey used — sandbox passkey used in production or vice versa",
+      "Wrong credentials: Password was not base64-encoded correctly (must be base64 of shortcode + passkey + timestamp concatenated as a plain string)",
+      "Merchant does not exist: The BusinessShortCode is not registered or activated on the Daraja platform for the current environment"
     ],
-    fix: "Generate the Timestamp once, store it in a variable, and use that exact same variable both to build the Password (base64(shortcode + passkey + timestamp)) and as the Timestamp field in the request body. Never generate the timestamp twice. Verify your passkey matches the environment — sandbox and production have different passkeys.",
-    notes: "This error appears in the errorCode field of the immediate API response (not in a callback). The errorMessage is typically '[MerchantValidate] - Wrong credentials'. Confirmed in official Safaricom GitHub issue trackers."
+    fix: "Check the full errorMessage field first. If it says '[MerchantValidate] - Wrong credentials': generate the Timestamp once, store it in a variable, and use that exact same variable both to build the Password and as the Timestamp field — never generate it twice. Verify your passkey matches the environment. If it says 'Merchant does not exist': confirm your shortcode is correctly registered and that you are not mixing sandbox and production shortcodes.",
+    notes: "This error appears in the errorCode field of the immediate API response (not in a callback). The errorMessage will be either '[MerchantValidate] - Wrong credentials' or 'Merchant does not exist' — these are two different root causes under the same code. Confirmed in official Safaricom GitHub issue trackers (LNMOnlineAndroidSample issues #8 and #50)."
+  },
+  {
+    code: "401.003.01",
+    title: "Invalid Access Token (OAuth Step)",
+    api: "HTTP",
+    category: "auth",
+    description: "The access token is invalid during the OAuth authorization step itself. Different from 404.001.03, which occurs when a valid-looking but expired token is used on an API call — this one fires when the token is rejected at the authorization layer.",
+    causes: [
+      "Token was generated in sandbox but used against the production OAuth endpoint or vice versa",
+      "Token value is malformed or truncated (e.g. copy-paste error)",
+      "Token was revoked or the Daraja app credentials were rotated after the token was issued"
+    ],
+    fix: "Regenerate a fresh access token using the correct Consumer Key and Secret for the target environment (sandbox vs production). Ensure you are calling the correct base URL: https://sandbox.safaricom.co.ke for sandbox and https://api.safaricom.co.ke for production. Log the raw token value to confirm it is not truncated.",
+    notes: "Confirmed in official Safaricom GitHub issue thread (LNMOnlineAndroidSample#11). Distinct from 404.001.03 — both relate to token problems, but 401.003.01 is an invalid token during authorization and 404.001.03 is an expired token during API calls. Handle both identically in code: regenerate and retry."
   },
   {
     code: "404.001.03",
