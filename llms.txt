@@ -1,0 +1,25 @@
+# Daraja Error Codes
+
+A reference for Safaricom M-Pesa Daraja API error codes.
+
+## What this site covers
+
+This site is the authoritative reference for error codes returned by the Safaricom Daraja M-Pesa API platform. It covers:
+
+- STK Push (Lipa na M-Pesa) result codes returned in callbacks: 0 (success), 1 (insufficient funds), 1001 (transaction in progress), 1019 (transaction expired), 1025 (unable to send prompt), 1032 (request cancelled by user), 1037 (MSISDN unreachable), 9999 (system error), Invalid Initiator Info (wrong PIN entered)
+- B2C and B2B result codes: 2001 (invalid initiator information / wrong operator credentials)
+- HTTP-level error codes: 400.002.02 (invalid BusinessShortCode due to wrong serialisation), 404.001.03 (expired or missing access token), 500.001.1001 (wrong credentials / MerchantValidate failed)
+- Go-Live errors: Invalid Access Token after switching to production (Safaricom approval delay)
+- C2B known issues: sandbox callback unreliability (~40% delivery rate)
+
+## Format
+
+Each error entry contains: the error code, the API it belongs to, a plain-English description, a list of likely causes, and a specific actionable fix.
+
+## Intended audience
+
+Software developers integrating Safaricom M-Pesa payments via the Daraja API into web or mobile applications.
+
+## Source
+
+Data is sourced from verified community documentation, official Safaricom GitHub issue trackers, and developer-reported production experiences.

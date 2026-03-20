@@ -1,0 +1,472 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Daraja Error Codes — M-Pesa API Error Reference</title>
+
+  <meta name="description" content="Searchable reference for every Safaricom Daraja M-Pesa API error code. Covers STK Push, C2B, B2C, HTTP and Go-Live errors — with exact causes and copy-paste fixes.">
+  <meta name="keywords" content="daraja api error codes, mpesa error 1037, mpesa error 1032, stk push error codes, safaricom daraja errors, mpesa api errors, daraja 500.001.1001, daraja 404.001.03, mpesa b2c error 2001, daraja error reference">
+  <meta name="robots" content="index, follow">
+  <link rel="canonical" href="https://officialnyabuto.github.io/daraja-codes">
+
+  <!-- Open Graph — controls how the link looks when shared on WhatsApp, Telegram, Twitter, LinkedIn -->
+  <meta property="og:title" content="Daraja Error Codes — M-Pesa API Error Reference">
+  <meta property="og:description" content="The missing error code reference for Safaricom's Daraja M-Pesa API. Search by code, message, or API type.">
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://officialnyabuto.github.io/daraja-codes">
+
+  <!-- Twitter/X card -->
+  <meta name="twitter:card" content="summary">
+  <meta name="twitter:title" content="Daraja Error Codes — M-Pesa API Error Reference">
+  <meta name="twitter:description" content="The missing error code reference for Safaricom's Daraja M-Pesa API. Search by code, message, or API type.">
+
+  <!-- Structured data for Google and AI crawlers -->
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "TechArticle",
+    "name": "Daraja M-Pesa API Error Code Reference",
+    "description": "A searchable reference for every Safaricom Daraja M-Pesa API error code, covering STK Push, C2B, B2C, HTTP and Go-Live errors with causes and fixes.",
+    "url": "https://officialnyabuto.github.io/daraja-codes",
+    "author": {
+      "@type": "Person",
+      "name": "Your Name Here"
+    },
+    "publisher": {
+      "@type": "Organization",
+      "name": "Daraja Error Codes"
+    },
+    "about": [
+      {"@type": "Thing", "name": "Safaricom Daraja API"},
+      {"@type": "Thing", "name": "M-Pesa API"},
+      {"@type": "Thing", "name": "STK Push"},
+      {"@type": "Thing", "name": "Mobile Money Kenya"}
+    ],
+    "keywords": "daraja api, mpesa errors, stk push, safaricom api, mobile money kenya"
+  }
+  </script>
+
+  <style>
+    *, *::before, *::after {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      padding: 0;
+      background: #f5f5f5;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      color: #222;
+      line-height: 1.5;
+    }
+
+    .container {
+      max-width: 860px;
+      margin: 0 auto;
+      padding: 40px 20px 60px;
+    }
+
+    /* Header */
+    .site-header {
+      margin-bottom: 32px;
+    }
+
+    h1 {
+      font-size: 32px;
+      font-weight: 800;
+      margin: 0 0 10px;
+      color: #111;
+    }
+
+    .subtitle {
+      font-size: 16px;
+      color: #444;
+      margin: 0 0 8px;
+    }
+
+    .launch-note {
+      font-size: 13px;
+      color: #888;
+      margin: 0;
+    }
+
+    /* Controls */
+    .controls {
+      margin-bottom: 28px;
+    }
+
+    #search {
+      width: 100%;
+      padding: 14px;
+      font-size: 16px;
+      border: 1px solid #ccc;
+      border-radius: 8px;
+      outline: none;
+      background: #fff;
+      color: #222;
+      margin-bottom: 12px;
+      transition: box-shadow 0.15s ease;
+    }
+
+    #search:focus {
+      box-shadow: 0 0 0 3px rgba(0, 100, 255, 0.15);
+      border-color: #ccc;
+    }
+
+    .filter-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0;
+    }
+
+    .filter-btn {
+      display: inline-block;
+      padding: 8px 16px;
+      font-size: 14px;
+      font-family: inherit;
+      border-radius: 20px;
+      border: 1px solid #ccc;
+      background: #fff;
+      color: #333;
+      cursor: pointer;
+      margin: 4px;
+      transition: background 0.12s ease, color 0.12s ease, border-color 0.12s ease;
+    }
+
+    .filter-btn:hover {
+      background: #f0f0f0;
+    }
+
+    .filter-btn.active {
+      background: #0066ff;
+      color: #fff;
+      border-color: #0066ff;
+    }
+
+    .filter-btn.active:hover {
+      background: #0055dd;
+    }
+
+    /* Empty state */
+    #empty-state {
+      display: none;
+      text-align: center;
+      padding: 48px 20px;
+      color: #777;
+      font-size: 15px;
+    }
+
+    /* Cards */
+    .card {
+      background: #fff;
+      border: 1px solid #e0e0e0;
+      border-radius: 8px;
+      padding: 20px;
+      margin-bottom: 16px;
+      transition: box-shadow 0.15s ease;
+    }
+
+    .card:hover {
+      box-shadow: 0 4px 16px rgba(0, 0, 0, 0.08);
+    }
+
+    .card-top-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-bottom: 10px;
+    }
+
+    .code {
+      font-family: monospace;
+      font-size: 22px;
+      font-weight: 700;
+      color: #0066ff;
+    }
+
+    .api-badge {
+      font-size: 12px;
+      font-weight: 600;
+      padding: 3px 10px;
+      border-radius: 12px;
+      white-space: nowrap;
+    }
+
+    .api-badge.api-stk-push {
+      background: #fff3cd;
+      color: #856404;
+    }
+
+    .api-badge.api-c2b {
+      background: #d1ecf1;
+      color: #0c5460;
+    }
+
+    .api-badge.api-b2c {
+      background: #d4edda;
+      color: #155724;
+    }
+
+    .api-badge.api-http {
+      background: #f8d7da;
+      color: #721c24;
+    }
+
+    .api-badge.api-go-live {
+      background: #e2d9f3;
+      color: #4a235a;
+    }
+
+    .card-title {
+      font-size: 17px;
+      font-weight: 700;
+      margin: 0 0 8px;
+      color: #111;
+    }
+
+    .description {
+      font-size: 14px;
+      color: #444;
+      margin: 0;
+    }
+
+    .section-label {
+      font-size: 11px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: #666;
+      margin-top: 14px;
+      margin-bottom: 6px;
+    }
+
+    .card ul {
+      margin: 6px 0;
+      padding-left: 20px;
+      font-size: 14px;
+      color: #444;
+    }
+
+    .card ul li {
+      margin-bottom: 4px;
+    }
+
+    .fix-text {
+      background: #f0fff4;
+      border-left: 3px solid #28a745;
+      padding: 10px 14px;
+      border-radius: 0 6px 6px 0;
+      font-size: 14px;
+      margin: 0;
+      color: #333;
+    }
+
+    .notes-text {
+      background: #fff8e1;
+      border-left: 3px solid #ffc107;
+      padding: 10px 14px;
+      border-radius: 0 6px 6px 0;
+      font-size: 13px;
+      color: #555;
+      margin: 0;
+    }
+
+    /* Footer */
+    .site-footer {
+      margin-top: 48px;
+      padding-top: 24px;
+      border-top: 1px solid #e0e0e0;
+      font-size: 13px;
+      color: #888;
+    }
+
+    .site-footer p {
+      margin: 0 0 6px;
+    }
+
+    .site-footer a {
+      color: #0066ff;
+      text-decoration: none;
+    }
+
+    .site-footer a:hover {
+      text-decoration: underline;
+    }
+
+    /* Responsive */
+    @media (max-width: 600px) {
+      h1 {
+        font-size: 26px;
+      }
+
+      .card-top-row {
+        flex-direction: column;
+        align-items: flex-start;
+      }
+
+      .code {
+        font-size: 18px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+
+    <header class="site-header">
+      <h1>Daraja Error Codes</h1>
+      <p class="subtitle">The missing error code reference for Safaricom's Daraja M-Pesa API. Search by code, message, or API type.</p>
+      <p class="launch-note">10 confirmed errors at launch — open an issue on GitHub to add more.</p>
+    </header>
+
+    <div class="controls">
+      <input
+        type="text"
+        id="search"
+        placeholder="Search by code, message, or description..."
+        autofocus
+        autocomplete="off"
+        spellcheck="false"
+      >
+      <div class="filter-row" id="filter-row">
+        <button class="filter-btn active" data-filter="All">All</button>
+        <button class="filter-btn" data-filter="STK Push">STK Push</button>
+        <button class="filter-btn" data-filter="C2B">C2B</button>
+        <button class="filter-btn" data-filter="B2C">B2C</button>
+        <button class="filter-btn" data-filter="HTTP">HTTP</button>
+        <button class="filter-btn" data-filter="Go-Live">Go-Live</button>
+      </div>
+    </div>
+
+    <div id="results"></div>
+    <div id="empty-state">No matching errors found. Open an issue on GitHub to add this error code.</div>
+
+    <footer class="site-footer">
+      <p>Built to fill a gap in the Daraja developer ecosystem.</p>
+      <p><a href="https://github.com" target="_blank" rel="noopener noreferrer">View on GitHub</a></p>
+      <p>Data sourced from community documentation and verified developer reports.</p>
+    </footer>
+
+  </div>
+
+  <script src="errors.js"></script>
+  <script>
+    (function () {
+      var currentQuery = "";
+      var currentFilter = "All";
+
+      var resultsEl = document.getElementById("results");
+      var emptyStateEl = document.getElementById("empty-state");
+      var searchEl = document.getElementById("search");
+      var filterBtns = document.querySelectorAll(".filter-btn");
+
+      function slugifyApi(api) {
+        return api.toLowerCase().replace(/\s+/g, "-");
+      }
+
+      function escapeHtml(str) {
+        return str
+          .replace(/&/g, "&amp;")
+          .replace(/</g, "&lt;")
+          .replace(/>/g, "&gt;")
+          .replace(/"/g, "&quot;")
+          .replace(/'/g, "&#39;");
+      }
+
+      function buildCard(entry) {
+        var slug = slugifyApi(entry.api);
+        var causesHtml = "";
+        for (var i = 0; i < entry.causes.length; i++) {
+          causesHtml += "<li>" + escapeHtml(entry.causes[i]) + "</li>";
+        }
+
+        var notesHtml = "";
+        if (entry.notes) {
+          notesHtml =
+            '<div class="section-label">Notes</div>' +
+            '<p class="notes-text">' + escapeHtml(entry.notes) + "</p>";
+        }
+
+        return (
+          '<div class="card">' +
+            '<div class="card-top-row">' +
+              '<span class="code">' + escapeHtml(entry.code) + "</span>" +
+              '<span class="api-badge api-' + escapeHtml(slug) + '">' + escapeHtml(entry.api) + "</span>" +
+            "</div>" +
+            '<h2 class="card-title">' + escapeHtml(entry.title) + "</h2>" +
+            '<p class="description">' + escapeHtml(entry.description) + "</p>" +
+            '<div class="section-label">Likely Causes</div>' +
+            "<ul>" + causesHtml + "</ul>" +
+            '<div class="section-label">Fix</div>' +
+            '<p class="fix-text">' + escapeHtml(entry.fix) + "</p>" +
+            notesHtml +
+          "</div>"
+        );
+      }
+
+      function renderCards(entries) {
+        if (entries.length === 0) {
+          resultsEl.style.display = "none";
+          emptyStateEl.style.display = "block";
+          return;
+        }
+        resultsEl.style.display = "block";
+        emptyStateEl.style.display = "none";
+
+        var html = "";
+        for (var i = 0; i < entries.length; i++) {
+          html += buildCard(entries[i]);
+        }
+        resultsEl.innerHTML = html;
+      }
+
+      function filterAndRender() {
+        var filtered = ERRORS;
+
+        if (currentFilter !== "All") {
+          filtered = filtered.filter(function (e) {
+            return e.api === currentFilter;
+          });
+        }
+
+        if (currentQuery !== "") {
+          var q = currentQuery.toLowerCase();
+          filtered = filtered.filter(function (e) {
+            return (
+              e.code.toLowerCase().indexOf(q) !== -1 ||
+              e.title.toLowerCase().indexOf(q) !== -1 ||
+              e.description.toLowerCase().indexOf(q) !== -1 ||
+              e.causes.join(" ").toLowerCase().indexOf(q) !== -1 ||
+              e.fix.toLowerCase().indexOf(q) !== -1
+            );
+          });
+        }
+
+        renderCards(filtered);
+      }
+
+      searchEl.addEventListener("input", function () {
+        currentQuery = searchEl.value;
+        document.title = currentQuery.trim() ? "Error " + currentQuery.trim() + " \u2014 Daraja M-Pesa API Reference" : "Daraja Error Codes \u2014 M-Pesa API Error Reference";
+        filterAndRender();
+      });
+
+      filterBtns.forEach(function (btn) {
+        btn.addEventListener("click", function () {
+          currentFilter = btn.getAttribute("data-filter");
+          filterBtns.forEach(function (b) {
+            b.classList.remove("active");
+          });
+          btn.classList.add("active");
+          filterAndRender();
+        });
+      });
+
+      renderCards(ERRORS);
+    })();
+  </script>
+</body>
+</html>
