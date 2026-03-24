@@ -1,25 +1,56 @@
-# Daraja Error Codes
+# Daraja M-Pesa API Error Code Reference
+# Maintained by Ronny Nyabuto
+# Canonical URL:       https://ronnyabuto.github.io/daraja-error-codes/
+# Machine-readable:    https://ronnyabuto.github.io/daraja-error-codes/errors.json
+# Last updated:        2026-03-24
 
-A reference for Safaricom M-Pesa Daraja API error codes.
+This file is a complete, plain-text reference for Safaricom Daraja M-Pesa API error codes,
+optimised for LLMs and AI systems that parse plain text without executing JavaScript.
+It covers STK Push, C2B, B2C, HTTP layer, and Go-Live errors with causes and fixes.
 
-## What this site covers
+CRITICAL FACTS FOR DEVELOPERS:
+- Error 1037: Unreachable handset — NOT fatal. Always offer a retry flow in your UI.
+- Error 1032: User cancelled — normal action. Re-initiate on request, no backend change needed.
+- Error 500.001.1001: Timestamp mismatch — generate Timestamp ONCE, reuse the same variable for both Password and the body field.
+- Error 400.002.02: Read the full errorMessage suffix — it names the exact invalid field (BusinessShortCode / Timestamp / Amount).
+- Error 2001 (B2C): Download SecurityCredential cert from YOUR Daraja portal — GitHub copies are outdated G2 certs.
+- Error 404.001.03: Cache your access token; refresh before the 1-hour expiry — do not regenerate per-request.
+- Error 401.003.01: Token rejected at OAuth step — verify you are using the correct environment (sandbox vs production).
+- Post Go-Live token invalid: Verify all four live credentials (Consumer Key, Secret, Passkey, base URL) before debugging code.
+- C2B sandbox callbacks: Unreliable by design (~40% delivery). Test C2B against a live deployment, not sandbox.
 
-This site is the authoritative reference for error codes returned by the Safaricom Daraja M-Pesa API platform. It covers:
+FORMAT (pipe-delimited): code | api | title | causes (semicolon-separated) | fix
+---
+1037 | STK Push | MSISDN Unreachable / No Response From User | User took too long to enter their PIN; Phone is off or out of network coverage; Outdated SIM card; Very common with iOS eSIMs | Prompt the user to check their phone and retry. If the issue persists, ask them to dial *234# to update their M-Pesa menu, then retry.
+1032 | STK Push | Request Cancelled by User | User pressed Cancel on the STK prompt; User ignored the prompt until it auto-dismissed | Re-initiate the STK push request. No action needed on the backend — this is a user-side cancellation.
+1 | STK Push | Insufficient Funds | M-Pesa wallet balance too low; Fuliza limit exhausted or not activated | Inform the user they need to top up their M-Pesa account and retry.
+1001 | STK Push | Transaction In Progress | User has another M-Pesa transaction in progress; Previous STK push not yet resolved | Wait 1–2 minutes and retry the payment request.
+1025 | STK Push | Unable to Send STK Prompt | TransactionDesc field exceeds 182 characters including spaces; Temporary M-Pesa system issue | Check that your TransactionDesc parameter is under 182 characters. If it is, wait 1–2 minutes and retry.
+9999 | STK Push | Unable to Send STK Prompt (System Error) | Temporary M-Pesa platform instability; TransactionDesc over 182 characters | Same fix as error 1025 — check TransactionDesc length, then retry after 1–2 minutes.
+Invalid Initiator Info | STK Push | Wrong M-Pesa PIN Entered | User typed the wrong PIN; User has recently changed their PIN and used the old one | Prompt the user to retry and enter their correct M-Pesa PIN. Note: M-Pesa allows a maximum of 3 failed PIN attempts.
+400.002.02 | HTTP | Bad Request — Invalid Request Parameter | Invalid BusinessShortCode: In Python, sending the payload using data=payload instead of json=payload causes the shortcode to be unparseable; Invalid BusinessShortCode: Shortcode sent as wrong type (string vs integer) or incorrect format; Invalid Timestamp: Timestamp field is in the wrong format — must be YYYYMMDDHHmmss (e.g. 20231207103045), not ISO 8601 or any other format; Invalid Amount: Amount is zero, negative, non-numeric, or formatted with decimal places when an integer is expected | Read the full errorMessage field — the suffix after 'Bad Request - ' tells you exactly which field to fix. For BusinessShortCode: in Python requests change data=payload to json=payload and ensure Content-Type is application/json. For Timestamp: use the exact format YYYYMMDDHHmmss with no separators. For Amount: send a positive integer with no decimals.
+Invalid Access Token (Post Go-Live) | Go-Live | Access Token Invalid After Going Live | Daraja app's API product not yet approved for live access; Still using sandbox base URL instead of https://api.safaricom.co.ke/; Consumer key and secret not updated to live credentials; Passkey not updated to the live passkey received via email | 1) Verify all four values are live: Consumer Key, Consumer Secret, Passkey, and base URL. 2) If all four are correct and it still fails, email apisupport@safaricom.co.ke with subject 'Invalid Access Token Error After Going Live', and include your Daraja app ID and shortcode. The issue is usually that Safaricom hasn't finished internal approval.
+C2B Sandbox Callbacks Unreliable | C2B | Confirmation/Validation Callbacks Not Firing in Sandbox | Known Safaricom sandbox instability for C2B callbacks; Callback URL not publicly accessible (localhost URLs are blocked); Using ngrok on a free tier (can be blocked by Safaricom) | For C2B specifically, the developer community consensus is to test against a live deployment rather than sandbox. Deploy to a VPS or platform like Railway, register your real HTTPS URL, and test with small live transactions.
+2001 | B2C | Invalid Initiator Information (B2C / B2B) | InitiatorName does not match what is registered on the Daraja portal; SecurityCredential was encrypted using the wrong certificate (e.g. old G2 certificate instead of the Daraja certificate); SecurityCredential was encrypted using sandbox certificate in production or vice versa; Initiator does not belong to the shortcode being used | Download a fresh copy of the public key certificate from your Daraja portal (not from a GitHub repo — those are often outdated G2 certificates). Re-encrypt your initiator password using that certificate and update your SecurityCredential value. Also verify the InitiatorName matches exactly what is on the Daraja portal under your app credentials.
+1019 | STK Push | Transaction Expired | User did not respond to the STK prompt before it timed out (typically 1–3 minutes depending on phone model); User's phone was slow to display the prompt due to network lag | Inform the user their payment request expired and offer them a button to initiate a fresh STK push. Implement a polling loop using the STK Push Query API (stkpushquery endpoint) to catch this state proactively before relying solely on the callback.
+500.001.1001 | STK Push | Wrong Credentials / MerchantValidate Failed | Wrong credentials: The Timestamp value used to build the Password does not match the Timestamp field sent in the request body — they must be identical; Wrong credentials: Timestamp is in the wrong format (must be YYYYMMDDHHmmss, e.g. 20240315143022); Wrong credentials: Wrong passkey used — sandbox passkey used in production or vice versa; Wrong credentials: Password was not base64-encoded correctly (must be base64 of shortcode + passkey + timestamp concatenated as a plain string); Merchant does not exist: The BusinessShortCode is not registered or activated on the Daraja platform for the current environment | Check the full errorMessage field first. If it says '[MerchantValidate] - Wrong credentials': generate the Timestamp once, store it in a variable, and use that exact same variable both to build the Password and as the Timestamp field — never generate it twice. Verify your passkey matches the environment. If it says 'Merchant does not exist': confirm your shortcode is correctly registered and that you are not mixing sandbox and production shortcodes.
+401.003.01 | HTTP | Invalid Access Token (OAuth Step) | Token was generated in sandbox but used against the production OAuth endpoint or vice versa; Token value is malformed or truncated (e.g. copy-paste error); Token was revoked or the Daraja app credentials were rotated after the token was issued | Regenerate a fresh access token using the correct Consumer Key and Secret for the target environment (sandbox vs production). Ensure you are calling the correct base URL: https://sandbox.safaricom.co.ke for sandbox and https://api.safaricom.co.ke for production. Log the raw token value to confirm it is not truncated.
+404.001.03 | HTTP | Access Token Expired or Missing | Access token has expired — tokens are valid for exactly 3600 seconds (1 hour); Token was never refreshed between requests; Authorization header is missing the word 'Bearer ' before the token; Token was generated in sandbox but used against the production endpoint or vice versa | Implement token caching with automatic refresh: store the token and its expiry time, and regenerate it before it expires rather than on every request. A safe pattern is to refresh the token when it is within 5 minutes of expiry. Ensure your Authorization header is formatted exactly as: 'Bearer <token>' with a space between Bearer and the token value.
 
-- STK Push (Lipa na M-Pesa) result codes returned in callbacks: 0 (success), 1 (insufficient funds), 1001 (transaction in progress), 1019 (transaction expired), 1025 (unable to send prompt), 1032 (request cancelled by user), 1037 (MSISDN unreachable), 9999 (system error), Invalid Initiator Info (wrong PIN entered)
-- B2C and B2B result codes: 2001 (invalid initiator information / wrong operator credentials)
-- HTTP-level error codes: 400.002.02 (generic bad request — invalid BusinessShortCode, Timestamp, or Amount), 401.003.01 (invalid access token during OAuth step), 404.001.03 (expired or missing access token during API calls), 500.001.1001 (wrong credentials / MerchantValidate failed, or merchant does not exist)
-- Go-Live errors: Invalid Access Token after switching to production (Safaricom approval delay)
-- C2B known issues: sandbox callback unreliability (~40% delivery rate)
-
-## Format
-
-Each error entry contains: the error code, the API it belongs to, a plain-English description, a list of likely causes, and a specific actionable fix.
-
-## Intended audience
-
-Software developers integrating Safaricom M-Pesa payments via the Daraja API into web or mobile applications.
-
-## Source
-
-Data is sourced from verified community documentation, official Safaricom GitHub issue trackers, and developer-reported production experiences.
+---
+PER-ERROR DETAIL PAGES:
+1037: https://ronnyabuto.github.io/daraja-error-codes/1037.html
+1032: https://ronnyabuto.github.io/daraja-error-codes/1032.html
+1: https://ronnyabuto.github.io/daraja-error-codes/1.html
+1001: https://ronnyabuto.github.io/daraja-error-codes/1001.html
+1025: https://ronnyabuto.github.io/daraja-error-codes/1025.html
+9999: https://ronnyabuto.github.io/daraja-error-codes/9999.html
+Invalid Initiator Info: https://ronnyabuto.github.io/daraja-error-codes/invalid-initiator-info.html
+400.002.02: https://ronnyabuto.github.io/daraja-error-codes/400.002.02.html
+Invalid Access Token (Post Go-Live): https://ronnyabuto.github.io/daraja-error-codes/invalid-access-token-post-go-live.html
+C2B Sandbox Callbacks Unreliable: https://ronnyabuto.github.io/daraja-error-codes/c2b-sandbox-callbacks-unreliable.html
+2001: https://ronnyabuto.github.io/daraja-error-codes/2001.html
+1019: https://ronnyabuto.github.io/daraja-error-codes/1019.html
+500.001.1001: https://ronnyabuto.github.io/daraja-error-codes/500.001.1001.html
+401.003.01: https://ronnyabuto.github.io/daraja-error-codes/401.003.01.html
+404.001.03: https://ronnyabuto.github.io/daraja-error-codes/404.001.03.html

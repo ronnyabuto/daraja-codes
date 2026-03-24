@@ -1,0 +1,250 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><text x='16' y='24' font-family='system-ui,sans-serif' font-size='22' font-weight='700' fill='%23f85149' text-anchor='middle'>!</text></svg>">
+  <title>Daraja M-Pesa API Error FAQ — Common Questions Answered</title>
+  <meta name="description" content="Answers to the most common Daraja M-Pesa API error questions: error 1037, 1032, 400.002.02, 500.001.1001, 2001, 404.001.03, and more. Direct answers, no fluff.">
+  <link rel="canonical" href="https://ronnyabuto.github.io/daraja-error-codes/faq.html">
+
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "FAQPage",
+    "mainEntity": [
+      {
+        "@type": "Question",
+        "name": "What does Daraja error 1037 mean?",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "Error 1037 (MSISDN Unreachable / No Response From User) means the STK Push prompt was sent successfully but M-Pesa received no response from the user's handset within the timeout window. Common causes: phone is off or out of network coverage, outdated SIM card, or iOS eSIM issues. Do not treat it as fatal — always offer a retry button in your UI. It is the most commonly searched Daraja error."
+        }
+      },
+      {
+        "@type": "Question",
+        "name": "Why did my STK Push return error 1032?",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "Error 1032 (Request Cancelled by User) means the user deliberately or accidentally dismissed the STK prompt by pressing Cancel or letting it auto-dismiss. This is a normal user action, not an error in your code. Re-initiate the STK Push if the user wants to try again — no backend action is needed."
+        }
+      },
+      {
+        "@type": "Question",
+        "name": "What causes Daraja error 500.001.1001 (Wrong credentials / MerchantValidate failed)?",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "Error 500.001.1001 has two distinct root causes under the same code. (1) Wrong credentials: the Timestamp used to build the Password field does not match the Timestamp sent in the request body. Fix: generate Timestamp once, store it in a variable, and use that exact same variable for both. (2) Merchant does not exist: the BusinessShortCode is not registered on the Daraja platform. Read the full errorMessage field to determine which case applies."
+        }
+      },
+      {
+        "@type": "Question",
+        "name": "How do I fix Daraja error 400.002.02 (Bad Request — Invalid Request Parameter)?",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "Error 400.002.02 is a generic validation error. The errorMessage suffix tells you exactly which field is invalid. 'Invalid BusinessShortCode' in Python is almost always caused by using data=payload instead of json=payload in requests — switch to json=payload. 'Invalid Timestamp' means the format must be YYYYMMDDHHmmss with no separators. 'Invalid Amount' means it must be a positive integer with no decimals."
+        }
+      },
+      {
+        "@type": "Question",
+        "name": "What is error 2001 in Daraja B2C?",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "Error 2001 (Invalid Initiator Information) means the operator credentials in a B2C or B2B request are invalid. The most common cause is encrypting the SecurityCredential using a stale certificate copied from a GitHub repository — those are usually the old G2 cert, not the current Daraja cert. Download a fresh certificate directly from your Daraja portal, re-encrypt your initiator password, and verify that InitiatorName exactly matches what is registered in the portal."
+        }
+      },
+      {
+        "@type": "Question",
+        "name": "Why is my Daraja access token invalid after going live?",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "After switching to production, all four credentials must be updated simultaneously: Consumer Key, Consumer Secret, Passkey, and base URL (https://api.safaricom.co.ke/). If all four are correct and tokens are still rejected, Safaricom has likely not yet completed internal approval of your Daraja app. Email apisupport@safaricom.co.ke with your app ID and shortcode. This is not a code issue 90% of the time — escalate early."
+        }
+      },
+      {
+        "@type": "Question",
+        "name": "Why are my C2B sandbox callbacks not arriving?",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "C2B sandbox callbacks are unreliable by design — a known, long-standing Safaricom limitation with approximately 40% delivery rate. The developer community consensus is to test C2B against a live deployment rather than sandbox. Deploy to a public HTTPS URL (Railway, VPS, etc.), register your real callback URL, and test with small live transactions. Safaricom also blocks ngrok URLs on production."
+        }
+      },
+      {
+        "@type": "Question",
+        "name": "What does Daraja error 1019 (Transaction Expired) mean?",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "Error 1019 means the STK Push prompt reached the user's phone but they did not respond before the timeout (typically 1–3 minutes). Unlike error 1037 where the prompt never reached the phone, 1019 means the prompt arrived but was ignored or the user was too slow. Inform the user their request expired and offer a fresh STK Push. Use the STK Push Query API to catch this state proactively."
+        }
+      },
+      {
+        "@type": "Question",
+        "name": "What is Daraja error 404.001.03?",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "Error 404.001.03 (Access Token Expired or Missing) means the Bearer token in the Authorization header is expired or absent. Daraja tokens expire after exactly 3600 seconds (1 hour). Fix: implement token caching — store the token and its expiry time, and regenerate before expiry rather than on every request. A safe pattern is to refresh when within 5 minutes of expiry. Also verify the Authorization header is 'Bearer <token>' with a space."
+        }
+      },
+      {
+        "@type": "Question",
+        "name": "What is Daraja error 401.003.01?",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "Error 401.003.01 (Invalid Access Token — OAuth Step) means the token was rejected at the authorization layer itself, not during an API call. This is distinct from 404.001.03 which fires during normal API calls with an expired token. Common cause: token generated in sandbox but used against the production endpoint, or vice versa. Regenerate a fresh token using the correct Consumer Key and Secret for the target environment."
+        }
+      },
+      {
+        "@type": "Question",
+        "name": "What does error 9999 mean in Daraja STK Push?",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "Error 9999 is an alias for error 1025. Both mean a system-level failure prevented the STK prompt from being delivered — either a temporary M-Pesa platform issue or a TransactionDesc field that exceeds 182 characters. Check that your TransactionDesc is under 182 characters, then retry after 1–2 minutes. Handle 9999 and 1025 identically in your error-handling logic."
+        }
+      },
+      {
+        "@type": "Question",
+        "name": "What does 'Invalid Initiator Info' mean in an STK Push callback?",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "'Invalid Initiator Info' in an STK Push callback (not a numeric code) means the user entered the wrong M-Pesa PIN when responding to the prompt. M-Pesa allows a maximum of 3 failed PIN attempts before locking. Prompt the user to retry with their correct M-Pesa PIN. Do not confuse this with error 2001 — that is a developer credentials issue in B2C, not a user PIN issue."
+        }
+      },
+      {
+        "@type": "Question",
+        "name": "What is Daraja error 1 (Insufficient Funds)?",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "Error 1 means the user's M-Pesa wallet balance is too low to complete the transaction and their Fuliza overdraft limit is also exhausted or not activated. This is a user-side condition. Inform the user they need to top up their M-Pesa account and retry."
+        }
+      },
+      {
+        "@type": "Question",
+        "name": "What is Daraja error 1001 (Transaction In Progress)?",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "Error 1001 means the user already has an active USSD session processing another M-Pesa transaction. M-Pesa cannot lock the subscriber for a new transaction while one is already in progress. Wait 1–2 minutes and retry the payment request."
+        }
+      },
+      {
+        "@type": "Question",
+        "name": "What is Daraja error 1025?",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "Error 1025 (Unable to Send STK Prompt) means a temporary system issue prevented delivery, or the TransactionDesc parameter exceeded 182 characters including spaces. Check your TransactionDesc length first. If it is under 182 characters, wait 1–2 minutes and retry. Error 9999 is the same error — handle both identically."
+        }
+      }
+    ]
+  }
+  </script>
+
+  <style>
+    *, *::before, *::after { box-sizing: border-box; }
+    body {
+      margin: 0; padding: 0; background: #f5f5f5;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      color: #222; line-height: 1.6;
+    }
+    .container { max-width: 720px; margin: 0 auto; padding: 40px 20px 60px; }
+    .back { font-size: 13px; color: #0066ff; text-decoration: none; display: inline-block; margin-bottom: 24px; }
+    .back:hover { text-decoration: underline; }
+    h1 { font-size: 28px; font-weight: 800; margin: 0 0 8px; color: #111; }
+    .subtitle { font-size: 15px; color: #555; margin: 0 0 36px; }
+    h2 { font-size: 16px; font-weight: 700; color: #111; margin: 0 0 8px; }
+    .qa { background: #fff; border: 1px solid #e0e0e0; border-radius: 8px; padding: 20px 24px; margin-bottom: 12px; }
+    .qa p { font-size: 14px; color: #444; margin: 0; }
+    .qa a { color: #0066ff; text-decoration: none; }
+    .qa a:hover { text-decoration: underline; }
+    .page-footer { margin-top: 48px; padding-top: 20px; border-top: 1px solid #e0e0e0; font-size: 13px; color: #888; }
+    .page-footer a { color: #0066ff; text-decoration: none; }
+    .page-footer a:hover { text-decoration: underline; }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <a href="https://ronnyabuto.github.io/daraja-error-codes/" class="back">← All Daraja Error Codes</a>
+
+    <h1>Daraja M-Pesa API — Error FAQ</h1>
+    <p class="subtitle">Direct answers to the questions developers actually search for.</p>
+
+    <div class="qa">
+      <h2>What does Daraja error 1037 mean?</h2>
+      <p>Error 1037 (MSISDN Unreachable / No Response From User) means the STK Push prompt was sent but M-Pesa received no response from the user's handset within the timeout window. Common causes: phone is off, out of coverage, outdated SIM, or iOS eSIM issues. This is the most Googled Daraja error. Do <strong>not</strong> treat it as fatal — always offer a retry button in your UI. <a href="https://ronnyabuto.github.io/daraja-error-codes/1037.html">Full details →</a></p>
+    </div>
+
+    <div class="qa">
+      <h2>Why did my STK Push return error 1032?</h2>
+      <p>Error 1032 (Request Cancelled by User) means the user dismissed the STK prompt — either pressed Cancel or let it auto-dismiss. This is a normal user action. Re-initiate the STK Push if the user wants to retry — no backend action needed. <a href="https://ronnyabuto.github.io/daraja-error-codes/1032.html">Full details →</a></p>
+    </div>
+
+    <div class="qa">
+      <h2>What causes error 500.001.1001 (Wrong credentials / MerchantValidate failed)?</h2>
+      <p>Two root causes share this code. (1) <strong>Wrong credentials</strong>: the Timestamp used to build the Password doesn't match the Timestamp in the request body — generate it once and reuse the same variable for both. (2) <strong>Merchant does not exist</strong>: the BusinessShortCode isn't registered on the platform. Read the full <code>errorMessage</code> field to know which you're dealing with. <a href="https://ronnyabuto.github.io/daraja-error-codes/500.001.1001.html">Full details →</a></p>
+    </div>
+
+    <div class="qa">
+      <h2>How do I fix error 400.002.02 (Bad Request — Invalid Request Parameter)?</h2>
+      <p>Read the <code>errorMessage</code> suffix — it names the exact invalid field. <strong>Invalid BusinessShortCode</strong> in Python: switch from <code>data=payload</code> to <code>json=payload</code>. <strong>Invalid Timestamp</strong>: format must be <code>YYYYMMDDHHmmss</code> with no separators. <strong>Invalid Amount</strong>: must be a positive integer, no decimals. <a href="https://ronnyabuto.github.io/daraja-error-codes/400.002.02.html">Full details →</a></p>
+    </div>
+
+    <div class="qa">
+      <h2>What is error 2001 in Daraja B2C?</h2>
+      <p>Error 2001 (Invalid Initiator Information) means your operator credentials are wrong. Most commonly: SecurityCredential was encrypted using a stale G2 certificate from a GitHub repo. Download a fresh certificate directly from your Daraja portal, re-encrypt, and verify that InitiatorName exactly matches the portal. <a href="https://ronnyabuto.github.io/daraja-error-codes/2001.html">Full details →</a></p>
+    </div>
+
+    <div class="qa">
+      <h2>Why is my Daraja access token invalid after going live?</h2>
+      <p>All four credentials must be live simultaneously: Consumer Key, Consumer Secret, Passkey, and base URL (<code>https://api.safaricom.co.ke/</code>). If all four are correct and it still fails, Safaricom has likely not completed internal approval of your app. Email <a href="mailto:apisupport@safaricom.co.ke">apisupport@safaricom.co.ke</a> with your app ID and shortcode. This is not a code issue 90% of the time. <a href="https://ronnyabuto.github.io/daraja-error-codes/invalid-access-token-post-go-live.html">Full details →</a></p>
+    </div>
+
+    <div class="qa">
+      <h2>Why are my C2B sandbox callbacks not arriving?</h2>
+      <p>C2B sandbox callbacks are unreliable by design — a known, long-standing Safaricom limitation with roughly 40% delivery rate. The developer community consensus: test C2B against a live deployment (Railway, VPS, etc.) with small real transactions. Localhost and ngrok URLs are blocked on production. <a href="https://ronnyabuto.github.io/daraja-error-codes/c2b-sandbox-callbacks-unreliable.html">Full details →</a></p>
+    </div>
+
+    <div class="qa">
+      <h2>What does error 1019 (Transaction Expired) mean?</h2>
+      <p>Error 1019 means the STK prompt reached the user's phone but they didn't act before the timeout (typically 1–3 minutes). Unlike 1037 where the prompt never reached the phone, 1019 means it arrived. Offer the user a fresh STK Push. Use the STK Push Query API to catch this proactively before relying on callbacks. <a href="https://ronnyabuto.github.io/daraja-error-codes/1019.html">Full details →</a></p>
+    </div>
+
+    <div class="qa">
+      <h2>What is Daraja error 404.001.03?</h2>
+      <p>Error 404.001.03 (Access Token Expired or Missing) means the Bearer token in your Authorization header has expired or is absent. Tokens expire after exactly 3600 seconds. Fix: cache the token and its expiry time, refresh before expiry — don't regenerate on every request. Ensure the header is <code>Bearer &lt;token&gt;</code> with a space. <a href="https://ronnyabuto.github.io/daraja-error-codes/404.001.03.html">Full details →</a></p>
+    </div>
+
+    <div class="qa">
+      <h2>What is Daraja error 401.003.01?</h2>
+      <p>Error 401.003.01 (Invalid Access Token — OAuth Step) means the token was rejected at the authorization layer itself. This is distinct from 404.001.03 which fires during API calls. Most common cause: using a sandbox token against the production OAuth endpoint or vice versa. Regenerate with the correct credentials for the target environment. <a href="https://ronnyabuto.github.io/daraja-error-codes/401.003.01.html">Full details →</a></p>
+    </div>
+
+    <div class="qa">
+      <h2>What does error 9999 mean in Daraja?</h2>
+      <p>Error 9999 is an alias for error 1025 — both mean the STK prompt couldn't be delivered due to a system issue or an oversized TransactionDesc (max 182 characters). Check TransactionDesc length, then retry after 1–2 minutes. Handle 9999 and 1025 identically in your code. <a href="https://ronnyabuto.github.io/daraja-error-codes/9999.html">Full details →</a></p>
+    </div>
+
+    <div class="qa">
+      <h2>What does "Invalid Initiator Info" mean in an STK Push callback?</h2>
+      <p>"Invalid Initiator Info" in an STK Push callback means the user entered the wrong M-Pesa PIN. M-Pesa allows a maximum of 3 failed PIN attempts. Prompt the user to retry. Don't confuse this with error 2001 — that is a developer credentials issue in B2C, not a user PIN issue. <a href="https://ronnyabuto.github.io/daraja-error-codes/invalid-initiator-info.html">Full details →</a></p>
+    </div>
+
+    <div class="qa">
+      <h2>What is Daraja error 1 (Insufficient Funds)?</h2>
+      <p>Error 1 means the user's M-Pesa balance is too low and their Fuliza overdraft limit is also exhausted or inactive. Inform the user they need to top up and retry. <a href="https://ronnyabuto.github.io/daraja-error-codes/1.html">Full details →</a></p>
+    </div>
+
+    <div class="qa">
+      <h2>What is Daraja error 1001 (Transaction In Progress)?</h2>
+      <p>Error 1001 means the user already has an active USSD session — another M-Pesa transaction is in progress. M-Pesa can't lock the subscriber for a new transaction. Wait 1–2 minutes and retry. <a href="https://ronnyabuto.github.io/daraja-error-codes/1001.html">Full details →</a></p>
+    </div>
+
+    <div class="qa">
+      <h2>What is Daraja error 1025?</h2>
+      <p>Error 1025 means the STK prompt couldn't be sent — either a temporary M-Pesa system issue or TransactionDesc over 182 characters. Check the length first, then retry after 1–2 minutes. Error 9999 is the same — handle both identically. <a href="https://ronnyabuto.github.io/daraja-error-codes/1025.html">Full details →</a></p>
+    </div>
+
+    <footer class="page-footer">
+      <p><a href="https://ronnyabuto.github.io/daraja-error-codes/">← Full error code reference</a></p>
+      <p>Open source on <a href="https://github.com/ronnyabuto/daraja-error-codes" target="_blank" rel="noopener">GitHub</a>. Data sourced from community docs and verified developer reports.</p>
+    </footer>
+  </div>
+</body>
+</html>

@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><text x='16' y='24' font-family='system-ui,sans-serif' font-size='22' font-weight='700' fill='%23f85149' text-anchor='middle'>!</text></svg>">
+  <title>Invalid Access Token (Post Go-Live) — Access Token Invalid After Going Live | Daraja M-Pesa Error Reference</title>
+  <meta name="description" content="Access Token Invalid After Going Live: After switching to production credentials, the access token is rejected even though the same code worked in sandbox.">
+  <link rel="canonical" href="https://ronnyabuto.github.io/daraja-error-codes/invalid-access-token-post-go-live.html">
+  <script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "TechArticle",
+  "headline": "Invalid Access Token (Post Go-Live) — Access Token Invalid After Going Live",
+  "description": "After switching to production credentials, the access token is rejected even though the same code worked in sandbox.",
+  "url": "https://ronnyabuto.github.io/daraja-error-codes/invalid-access-token-post-go-live.html",
+  "author": {
+    "@type": "Person",
+    "name": "Ronny Nyabuto"
+  },
+  "publisher": {
+    "@type": "Organization",
+    "name": "Daraja Error Codes",
+    "url": "https://ronnyabuto.github.io/daraja-error-codes"
+  },
+  "about": [
+    {
+      "@type": "Thing",
+      "name": "Safaricom Daraja API"
+    },
+    {
+      "@type": "Thing",
+      "name": "Go-Live"
+    }
+  ],
+  "keywords": "daraja error Invalid Access Token (Post Go-Live), mpesa error Invalid Access Token (Post Go-Live), go-live error"
+}
+  </script>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; }
+    body {
+      margin: 0; padding: 0;
+      background: #f5f5f5;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      color: #222; line-height: 1.6;
+    }
+    .container { max-width: 720px; margin: 0 auto; padding: 40px 20px 60px; }
+    .back { font-size: 13px; color: #0066ff; text-decoration: none; display: inline-block; margin-bottom: 24px; }
+    .back:hover { text-decoration: underline; }
+    .card { background: #fff; border: 1px solid #e0e0e0; border-radius: 8px; padding: 28px; }
+    .card-top-row {
+      display: flex; align-items: center; justify-content: space-between;
+      flex-wrap: wrap; gap: 8px; margin-bottom: 12px;
+    }
+    .code { font-family: monospace; font-size: 26px; font-weight: 700; color: #0066ff; }
+    .api-badge { font-size: 12px; font-weight: 600; padding: 3px 10px; border-radius: 12px; white-space: nowrap; }
+    .api-stk-push { background: #fff3cd; color: #856404; }
+    .api-http     { background: #f8d7da; color: #721c24; }
+    .api-c2b      { background: #d1ecf1; color: #0c5460; }
+    .api-b2c      { background: #d4edda; color: #155724; }
+    .api-go-live  { background: #e2d9f3; color: #4a235a; }
+    h1 { font-size: 22px; font-weight: 700; margin: 0 0 12px; color: #111; }
+    p  { font-size: 14px; color: #444; margin: 0 0 8px; }
+    .section-label {
+      font-size: 11px; font-weight: 700; text-transform: uppercase;
+      letter-spacing: 0.08em; color: #666; margin-top: 18px; margin-bottom: 6px;
+    }
+    ul { margin: 6px 0; padding-left: 20px; font-size: 14px; color: #444; }
+    ul li { margin-bottom: 4px; }
+    .fix-text {
+      background: #f0fff4; border-left: 3px solid #28a745;
+      padding: 10px 14px; border-radius: 0 6px 6px 0;
+      font-size: 14px; margin: 0; color: #333;
+    }
+    .notes-text {
+      background: #fff8e1; border-left: 3px solid #ffc107;
+      padding: 10px 14px; border-radius: 0 6px 6px 0;
+      font-size: 13px; color: #555; margin: 0;
+    }
+    .page-footer { margin-top: 32px; font-size: 13px; color: #888; text-align: center; }
+    .page-footer a { color: #0066ff; text-decoration: none; }
+    .page-footer a:hover { text-decoration: underline; }
+    @media (max-width: 600px) {
+      .card-top-row { flex-direction: column; align-items: flex-start; }
+      .code { font-size: 20px; }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <a href="https://ronnyabuto.github.io/daraja-error-codes/" class="back">← All Daraja Error Codes</a>
+
+    <div class="card">
+      <div class="card-top-row">
+        <span class="code">Invalid Access Token (Post Go-Live)</span>
+        <span class="api-badge api-go-live">Go-Live</span>
+      </div>
+      <h1>Access Token Invalid After Going Live</h1>
+      <p>After switching to production credentials, the access token is rejected even though the same code worked in sandbox.</p>
+
+      <div class="section-label">Likely Causes</div>
+      <ul>
+        <li>Daraja app&#39;s API product not yet approved for live access</li>
+        <li>Still using sandbox base URL instead of https://api.safaricom.co.ke/</li>
+        <li>Consumer key and secret not updated to live credentials</li>
+        <li>Passkey not updated to the live passkey received via email</li>
+      </ul>
+
+      <div class="section-label">Fix</div>
+      <p class="fix-text">1) Verify all four values are live: Consumer Key, Consumer Secret, Passkey, and base URL. 2) If all four are correct and it still fails, email apisupport@safaricom.co.ke with subject &#39;Invalid Access Token Error After Going Live&#39;, and include your Daraja app ID and shortcode. The issue is usually that Safaricom hasn&#39;t finished internal approval.</p>
+      <div class="section-label">Notes</div>
+      <p class="notes-text">This is not a code issue 90% of the time. Do not spend hours debugging — escalate to Safaricom support early.</p>
+    </div>
+
+    <p class="page-footer">
+      Part of the <a href="https://ronnyabuto.github.io/daraja-error-codes/">Daraja Error Code Reference</a> —
+      open source on <a href="https://github.com/ronnyabuto/daraja-error-codes" target="_blank" rel="noopener">GitHub</a>.
+    </p>
+  </div>
+</body>
+</html>

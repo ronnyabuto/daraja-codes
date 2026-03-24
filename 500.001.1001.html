@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><text x='16' y='24' font-family='system-ui,sans-serif' font-size='22' font-weight='700' fill='%23f85149' text-anchor='middle'>!</text></svg>">
+  <title>500.001.1001 — Wrong Credentials / MerchantValidate Failed | Daraja M-Pesa Error Reference</title>
+  <meta name="description" content="Wrong Credentials / MerchantValidate Failed: The STK Push request was rejected before an STK prompt was sent. This code covers two distinct scenarios: (1) ">
+  <link rel="canonical" href="https://ronnyabuto.github.io/daraja-error-codes/500.001.1001.html">
+  <script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "TechArticle",
+  "headline": "500.001.1001 — Wrong Credentials / MerchantValidate Failed",
+  "description": "The STK Push request was rejected before an STK prompt was sent. This code covers two distinct scenarios: (1) Wrong credentials — the Password field failed validation, and (2) Merchant does not exist — the shortcode is not registered on the platform.",
+  "url": "https://ronnyabuto.github.io/daraja-error-codes/500.001.1001.html",
+  "author": {
+    "@type": "Person",
+    "name": "Ronny Nyabuto"
+  },
+  "publisher": {
+    "@type": "Organization",
+    "name": "Daraja Error Codes",
+    "url": "https://ronnyabuto.github.io/daraja-error-codes"
+  },
+  "about": [
+    {
+      "@type": "Thing",
+      "name": "Safaricom Daraja API"
+    },
+    {
+      "@type": "Thing",
+      "name": "STK Push"
+    }
+  ],
+  "keywords": "daraja error 500.001.1001, mpesa error 500.001.1001, stk push error"
+}
+  </script>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; }
+    body {
+      margin: 0; padding: 0;
+      background: #f5f5f5;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      color: #222; line-height: 1.6;
+    }
+    .container { max-width: 720px; margin: 0 auto; padding: 40px 20px 60px; }
+    .back { font-size: 13px; color: #0066ff; text-decoration: none; display: inline-block; margin-bottom: 24px; }
+    .back:hover { text-decoration: underline; }
+    .card { background: #fff; border: 1px solid #e0e0e0; border-radius: 8px; padding: 28px; }
+    .card-top-row {
+      display: flex; align-items: center; justify-content: space-between;
+      flex-wrap: wrap; gap: 8px; margin-bottom: 12px;
+    }
+    .code { font-family: monospace; font-size: 26px; font-weight: 700; color: #0066ff; }
+    .api-badge { font-size: 12px; font-weight: 600; padding: 3px 10px; border-radius: 12px; white-space: nowrap; }
+    .api-stk-push { background: #fff3cd; color: #856404; }
+    .api-http     { background: #f8d7da; color: #721c24; }
+    .api-c2b      { background: #d1ecf1; color: #0c5460; }
+    .api-b2c      { background: #d4edda; color: #155724; }
+    .api-go-live  { background: #e2d9f3; color: #4a235a; }
+    h1 { font-size: 22px; font-weight: 700; margin: 0 0 12px; color: #111; }
+    p  { font-size: 14px; color: #444; margin: 0 0 8px; }
+    .section-label {
+      font-size: 11px; font-weight: 700; text-transform: uppercase;
+      letter-spacing: 0.08em; color: #666; margin-top: 18px; margin-bottom: 6px;
+    }
+    ul { margin: 6px 0; padding-left: 20px; font-size: 14px; color: #444; }
+    ul li { margin-bottom: 4px; }
+    .fix-text {
+      background: #f0fff4; border-left: 3px solid #28a745;
+      padding: 10px 14px; border-radius: 0 6px 6px 0;
+      font-size: 14px; margin: 0; color: #333;
+    }
+    .notes-text {
+      background: #fff8e1; border-left: 3px solid #ffc107;
+      padding: 10px 14px; border-radius: 0 6px 6px 0;
+      font-size: 13px; color: #555; margin: 0;
+    }
+    .page-footer { margin-top: 32px; font-size: 13px; color: #888; text-align: center; }
+    .page-footer a { color: #0066ff; text-decoration: none; }
+    .page-footer a:hover { text-decoration: underline; }
+    @media (max-width: 600px) {
+      .card-top-row { flex-direction: column; align-items: flex-start; }
+      .code { font-size: 20px; }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <a href="https://ronnyabuto.github.io/daraja-error-codes/" class="back">← All Daraja Error Codes</a>
+
+    <div class="card">
+      <div class="card-top-row">
+        <span class="code">500.001.1001</span>
+        <span class="api-badge api-stk-push">STK Push</span>
+      </div>
+      <h1>Wrong Credentials / MerchantValidate Failed</h1>
+      <p>The STK Push request was rejected before an STK prompt was sent. This code covers two distinct scenarios: (1) Wrong credentials — the Password field failed validation, and (2) Merchant does not exist — the shortcode is not registered on the platform.</p>
+
+      <div class="section-label">Likely Causes</div>
+      <ul>
+        <li>Wrong credentials: The Timestamp value used to build the Password does not match the Timestamp field sent in the request body — they must be identical</li>
+        <li>Wrong credentials: Timestamp is in the wrong format (must be YYYYMMDDHHmmss, e.g. 20240315143022)</li>
+        <li>Wrong credentials: Wrong passkey used — sandbox passkey used in production or vice versa</li>
+        <li>Wrong credentials: Password was not base64-encoded correctly (must be base64 of shortcode + passkey + timestamp concatenated as a plain string)</li>
+        <li>Merchant does not exist: The BusinessShortCode is not registered or activated on the Daraja platform for the current environment</li>
+      </ul>
+
+      <div class="section-label">Fix</div>
+      <p class="fix-text">Check the full errorMessage field first. If it says &#39;[MerchantValidate] - Wrong credentials&#39;: generate the Timestamp once, store it in a variable, and use that exact same variable both to build the Password and as the Timestamp field — never generate it twice. Verify your passkey matches the environment. If it says &#39;Merchant does not exist&#39;: confirm your shortcode is correctly registered and that you are not mixing sandbox and production shortcodes.</p>
+      <div class="section-label">Notes</div>
+      <p class="notes-text">This error appears in the errorCode field of the immediate API response (not in a callback). The errorMessage will be either &#39;[MerchantValidate] - Wrong credentials&#39; or &#39;Merchant does not exist&#39; — these are two different root causes under the same code. Confirmed in official Safaricom GitHub issue trackers (LNMOnlineAndroidSample issues #8 and #50).</p>
+    </div>
+
+    <p class="page-footer">
+      Part of the <a href="https://ronnyabuto.github.io/daraja-error-codes/">Daraja Error Code Reference</a> —
+      open source on <a href="https://github.com/ronnyabuto/daraja-error-codes" target="_blank" rel="noopener">GitHub</a>.
+    </p>
+  </div>
+</body>
+</html>

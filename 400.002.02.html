@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><text x='16' y='24' font-family='system-ui,sans-serif' font-size='22' font-weight='700' fill='%23f85149' text-anchor='middle'>!</text></svg>">
+  <title>400.002.02 — Bad Request — Invalid Request Parameter | Daraja M-Pesa Error Reference</title>
+  <meta name="description" content="Bad Request — Invalid Request Parameter: The API rejected the request because a field in the payload failed validation. The errorMessage suffix tells you w">
+  <link rel="canonical" href="https://ronnyabuto.github.io/daraja-error-codes/400.002.02.html">
+  <script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "TechArticle",
+  "headline": "400.002.02 — Bad Request — Invalid Request Parameter",
+  "description": "The API rejected the request because a field in the payload failed validation. The errorMessage suffix tells you which field is invalid (e.g. 'Bad Request - Invalid BusinessShortCode', 'Bad Request - Invalid Timestamp', 'Bad Request - Invalid Amount').",
+  "url": "https://ronnyabuto.github.io/daraja-error-codes/400.002.02.html",
+  "author": {
+    "@type": "Person",
+    "name": "Ronny Nyabuto"
+  },
+  "publisher": {
+    "@type": "Organization",
+    "name": "Daraja Error Codes",
+    "url": "https://ronnyabuto.github.io/daraja-error-codes"
+  },
+  "about": [
+    {
+      "@type": "Thing",
+      "name": "Safaricom Daraja API"
+    },
+    {
+      "@type": "Thing",
+      "name": "HTTP"
+    }
+  ],
+  "keywords": "daraja error 400.002.02, mpesa error 400.002.02, http error"
+}
+  </script>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; }
+    body {
+      margin: 0; padding: 0;
+      background: #f5f5f5;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      color: #222; line-height: 1.6;
+    }
+    .container { max-width: 720px; margin: 0 auto; padding: 40px 20px 60px; }
+    .back { font-size: 13px; color: #0066ff; text-decoration: none; display: inline-block; margin-bottom: 24px; }
+    .back:hover { text-decoration: underline; }
+    .card { background: #fff; border: 1px solid #e0e0e0; border-radius: 8px; padding: 28px; }
+    .card-top-row {
+      display: flex; align-items: center; justify-content: space-between;
+      flex-wrap: wrap; gap: 8px; margin-bottom: 12px;
+    }
+    .code { font-family: monospace; font-size: 26px; font-weight: 700; color: #0066ff; }
+    .api-badge { font-size: 12px; font-weight: 600; padding: 3px 10px; border-radius: 12px; white-space: nowrap; }
+    .api-stk-push { background: #fff3cd; color: #856404; }
+    .api-http     { background: #f8d7da; color: #721c24; }
+    .api-c2b      { background: #d1ecf1; color: #0c5460; }
+    .api-b2c      { background: #d4edda; color: #155724; }
+    .api-go-live  { background: #e2d9f3; color: #4a235a; }
+    h1 { font-size: 22px; font-weight: 700; margin: 0 0 12px; color: #111; }
+    p  { font-size: 14px; color: #444; margin: 0 0 8px; }
+    .section-label {
+      font-size: 11px; font-weight: 700; text-transform: uppercase;
+      letter-spacing: 0.08em; color: #666; margin-top: 18px; margin-bottom: 6px;
+    }
+    ul { margin: 6px 0; padding-left: 20px; font-size: 14px; color: #444; }
+    ul li { margin-bottom: 4px; }
+    .fix-text {
+      background: #f0fff4; border-left: 3px solid #28a745;
+      padding: 10px 14px; border-radius: 0 6px 6px 0;
+      font-size: 14px; margin: 0; color: #333;
+    }
+    .notes-text {
+      background: #fff8e1; border-left: 3px solid #ffc107;
+      padding: 10px 14px; border-radius: 0 6px 6px 0;
+      font-size: 13px; color: #555; margin: 0;
+    }
+    .page-footer { margin-top: 32px; font-size: 13px; color: #888; text-align: center; }
+    .page-footer a { color: #0066ff; text-decoration: none; }
+    .page-footer a:hover { text-decoration: underline; }
+    @media (max-width: 600px) {
+      .card-top-row { flex-direction: column; align-items: flex-start; }
+      .code { font-size: 20px; }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <a href="https://ronnyabuto.github.io/daraja-error-codes/" class="back">← All Daraja Error Codes</a>
+
+    <div class="card">
+      <div class="card-top-row">
+        <span class="code">400.002.02</span>
+        <span class="api-badge api-http">HTTP</span>
+      </div>
+      <h1>Bad Request — Invalid Request Parameter</h1>
+      <p>The API rejected the request because a field in the payload failed validation. The errorMessage suffix tells you which field is invalid (e.g. &#39;Bad Request - Invalid BusinessShortCode&#39;, &#39;Bad Request - Invalid Timestamp&#39;, &#39;Bad Request - Invalid Amount&#39;).</p>
+
+      <div class="section-label">Likely Causes</div>
+      <ul>
+        <li>Invalid BusinessShortCode: In Python, sending the payload using data=payload instead of json=payload causes the shortcode to be unparseable</li>
+        <li>Invalid BusinessShortCode: Shortcode sent as wrong type (string vs integer) or incorrect format</li>
+        <li>Invalid Timestamp: Timestamp field is in the wrong format — must be YYYYMMDDHHmmss (e.g. 20231207103045), not ISO 8601 or any other format</li>
+        <li>Invalid Amount: Amount is zero, negative, non-numeric, or formatted with decimal places when an integer is expected</li>
+      </ul>
+
+      <div class="section-label">Fix</div>
+      <p class="fix-text">Read the full errorMessage field — the suffix after &#39;Bad Request - &#39; tells you exactly which field to fix. For BusinessShortCode: in Python requests change data=payload to json=payload and ensure Content-Type is application/json. For Timestamp: use the exact format YYYYMMDDHHmmss with no separators. For Amount: send a positive integer with no decimals.</p>
+      <div class="section-label">Notes</div>
+      <p class="notes-text">This code is a generic Daraja request validation error. The errorMessage changes based on which field is invalid — always log the full errorMessage, not just the code.</p>
+    </div>
+
+    <p class="page-footer">
+      Part of the <a href="https://ronnyabuto.github.io/daraja-error-codes/">Daraja Error Code Reference</a> —
+      open source on <a href="https://github.com/ronnyabuto/daraja-error-codes" target="_blank" rel="noopener">GitHub</a>.
+    </p>
+  </div>
+</body>
+</html>
