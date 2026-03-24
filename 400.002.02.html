@@ -4,15 +4,17 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><text x='16' y='24' font-family='system-ui,sans-serif' font-size='22' font-weight='700' fill='%23f85149' text-anchor='middle'>!</text></svg>">
-  <title>400.002.02 — Bad Request — Invalid Request Parameter | Daraja M-Pesa Error Reference</title>
+  <title>Error 400.002.02: Bad Request — Invalid Request Parameter | Daraja M-Pesa Error Reference</title>
   <meta name="description" content="Bad Request — Invalid Request Parameter: The API rejected the request because a field in the payload failed validation. The errorMessage suffix tells you w">
+  <meta name="robots" content="index, follow, max-snippet:-1">
   <link rel="canonical" href="https://ronnyabuto.github.io/daraja-error-codes/400.002.02.html">
   <script type="application/ld+json">
 {
   "@context": "https://schema.org",
   "@type": "TechArticle",
-  "headline": "400.002.02 — Bad Request — Invalid Request Parameter",
+  "headline": "Error 400.002.02: Bad Request — Invalid Request Parameter",
   "description": "The API rejected the request because a field in the payload failed validation. The errorMessage suffix tells you which field is invalid (e.g. 'Bad Request - Invalid BusinessShortCode', 'Bad Request - Invalid Timestamp', 'Bad Request - Invalid Amount').",
+  "dateModified": "2026-03-24",
   "url": "https://ronnyabuto.github.io/daraja-error-codes/400.002.02.html",
   "author": {
     "@type": "Person",
@@ -34,6 +36,26 @@
     }
   ],
   "keywords": "daraja error 400.002.02, mpesa error 400.002.02, http error"
+}
+  </script>
+  <script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BreadcrumbList",
+  "itemListElement": [
+    {
+      "@type": "ListItem",
+      "position": 1,
+      "name": "Daraja Error Codes",
+      "item": "https://ronnyabuto.github.io/daraja-error-codes/"
+    },
+    {
+      "@type": "ListItem",
+      "position": 2,
+      "name": "Error 400.002.02: Bad Request — Invalid Request Parameter",
+      "item": "https://ronnyabuto.github.io/daraja-error-codes/400.002.02.html"
+    }
+  ]
 }
   </script>
   <style>
@@ -77,6 +99,10 @@
       padding: 10px 14px; border-radius: 0 6px 6px 0;
       font-size: 13px; color: #555; margin: 0;
     }
+    .related-list { list-style: none; padding: 0; margin: 6px 0; }
+    .related-list li { margin-bottom: 4px; }
+    .related-list a { color: #0066ff; text-decoration: none; font-size: 14px; font-weight: 500; }
+    .related-list a:hover { text-decoration: underline; }
     .page-footer { margin-top: 32px; font-size: 13px; color: #888; text-align: center; }
     .page-footer a { color: #0066ff; text-decoration: none; }
     .page-footer a:hover { text-decoration: underline; }
@@ -110,6 +136,11 @@
       <p class="fix-text">Read the full errorMessage field — the suffix after &#39;Bad Request - &#39; tells you exactly which field to fix. For BusinessShortCode: in Python requests change data=payload to json=payload and ensure Content-Type is application/json. For Timestamp: use the exact format YYYYMMDDHHmmss with no separators. For Amount: send a positive integer with no decimals.</p>
       <div class="section-label">Notes</div>
       <p class="notes-text">This code is a generic Daraja request validation error. The errorMessage changes based on which field is invalid — always log the full errorMessage, not just the code.</p>
+      <div class="section-label">Related Errors</div>
+      <ul class="related-list">
+        <li><a href="500.001.1001.html">Error 500.001.1001: Wrong Credentials / MerchantValidate Failed</a></li>
+        <li><a href="401.003.01.html">Error 401.003.01: Invalid Access Token (OAuth Step)</a></li>
+      </ul>
     </div>
 
     <p class="page-footer">

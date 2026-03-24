@@ -1,9 +1,10 @@
 # Daraja Error Codes
 
-The missing error code reference for Safaricom's Daraja M-Pesa API.
+**The missing error code reference for Safaricom's Daraja M-Pesa API.**
 
-## Live site
-https://ronnyabuto.github.io/daraja-error-codes
+**Live site: [ronnyabuto.github.io/daraja-error-codes](https://ronnyabuto.github.io/daraja-error-codes)**
+
+Search by error code, message, or symptom. Covers STK Push, C2B, B2C, HTTP, and Go-Live errors — each with exact causes and copy-paste fixes.
 
 ## How to add an error code
 1. Fork this repo

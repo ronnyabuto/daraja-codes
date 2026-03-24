@@ -3,13 +3,20 @@
  * generate.js — Daraja Error Code Reference generator
  *
  * Reads errors.js (the single source of truth) and outputs:
- *   - errors.json              — machine-readable data for AI agents and tool callers
- *   - {slug}.html              — one standalone, indexable page per error code
- *   - sitemap.xml              — full sitemap with priority weights
- *   - llms.txt                 — plain-text reference for LLMs that can only read text
+ *   - errors.json    — machine-readable data for AI agents and tool callers
+ *   - {slug}.html    — one standalone, indexable page per error code
+ *   - sitemap.xml    — full sitemap with priority weights
+ *   - llms.txt       — plain-text reference for LLMs that can only read text
  *
  * Run: node generate.js
  * Re-run every time errors.js changes.
+ *
+ * SEO features per page:
+ *   - Title: "Error {code}: {title}" (code front-loaded, matches developer search queries)
+ *   - <meta name="robots" content="index, follow, max-snippet:-1">
+ *   - TechArticle JSON-LD with dateModified
+ *   - BreadcrumbList JSON-LD (produces breadcrumb trail in Google SERPs)
+ *   - Related Errors section (internal linking for PageRank distribution + topical clustering)
  */
 
 'use strict';
@@ -21,17 +28,19 @@ const vm   = require('vm');
 // ── Load data ────────────────────────────────────────────────────────────────
 
 const errorsSource = fs.readFileSync(path.join(__dirname, 'errors.js'), 'utf8');
-// Replace the const declaration with a bare assignment so vm can land it on the sandbox object
 const sandbox = {};
 vm.runInNewContext(errorsSource.replace(/^\s*const\s+ERRORS\s*=/, 'ERRORS ='), sandbox);
 const ERRORS = sandbox.ERRORS;
+
+// Code → entry lookup for resolving related links
+const byCode = Object.fromEntries(ERRORS.map(e => [e.code, e]));
 
 // ── Config ───────────────────────────────────────────────────────────────────
 
 const BASE_URL = 'https://ronnyabuto.github.io/daraja-error-codes';
 const TODAY    = new Date().toISOString().slice(0, 10);
 
-// Errors known to be high-traffic get sitemap priority 0.8; all others get 0.7
+// High-traffic errors get sitemap priority 0.8; all others 0.7
 const HIGH_TRAFFIC = new Set(['1037', '1032', '400.002.02', '500.001.1001', '2001', '404.001.03']);
 
 // ── Helpers ──────────────────────────────────────────────────────────────────
@@ -107,6 +116,10 @@ const SHARED_CSS = `
       padding: 10px 14px; border-radius: 0 6px 6px 0;
       font-size: 13px; color: #555; margin: 0;
     }
+    .related-list { list-style: none; padding: 0; margin: 6px 0; }
+    .related-list li { margin-bottom: 4px; }
+    .related-list a { color: #0066ff; text-decoration: none; font-size: 14px; font-weight: 500; }
+    .related-list a:hover { text-decoration: underline; }
     .page-footer { margin-top: 32px; font-size: 13px; color: #888; text-align: center; }
     .page-footer a { color: #0066ff; text-decoration: none; }
     .page-footer a:hover { text-decoration: underline; }
@@ -121,20 +134,41 @@ for (const entry of ERRORS) {
   const pageUrl = `${BASE_URL}/${slug}.html`;
   const apiSlug = entry.api.toLowerCase().replace(/\s+/g, '-');
 
+  // Title: error code front-loaded — matches how developers search ("daraja error 1037")
+  const pageTitle = `Error ${entry.code}: ${entry.title} | Daraja M-Pesa Error Reference`;
+
   const causesItems = entry.causes.map(c => `        <li>${esc(c)}</li>`).join('\n');
 
   const notesSection = entry.notes
     ? `\n      <div class="section-label">Notes</div>\n      <p class="notes-text">${esc(entry.notes)}</p>`
     : '';
 
+  // Related errors — internal links for PageRank distribution + topical clustering
+  let relatedSection = '';
+  if (entry.related && entry.related.length) {
+    const items = entry.related
+      .map(code => {
+        const rel = byCode[code];
+        if (!rel) return '';
+        return `        <li><a href="${slugify(code)}.html">Error ${esc(code)}: ${esc(rel.title)}</a></li>`;
+      })
+      .filter(Boolean)
+      .join('\n');
+    if (items) {
+      relatedSection = `\n      <div class="section-label">Related Errors</div>\n      <ul class="related-list">\n${items}\n      </ul>`;
+    }
+  }
+
   const metaDesc = `${entry.title}: ${entry.description}`.replace(/"/g, "'").slice(0, 155);
 
-  const jsonld = JSON.stringify({
-    '@context':   'https://schema.org',
-    '@type':      'TechArticle',
-    'headline':   `${entry.code} — ${entry.title}`,
-    'description': entry.description,
-    'url':         pageUrl,
+  // TechArticle JSON-LD — dateModified signals freshness to Google
+  const techArticleJsonld = JSON.stringify({
+    '@context':    'https://schema.org',
+    '@type':       'TechArticle',
+    'headline':    `Error ${entry.code}: ${entry.title}`,
+    'description':  entry.description,
+    'dateModified': TODAY,
+    'url':          pageUrl,
     'author':    { '@type': 'Person',       'name': 'Ronny Nyabuto' },
     'publisher': { '@type': 'Organization', 'name': 'Daraja Error Codes', 'url': BASE_URL },
     'about': [
@@ -144,17 +178,31 @@ for (const entry of ERRORS) {
     'keywords': `daraja error ${entry.code}, mpesa error ${entry.code}, ${entry.api.toLowerCase()} error`
   }, null, 2);
 
+  // BreadcrumbList JSON-LD — produces breadcrumb trail in Google SERPs
+  const breadcrumbJsonld = JSON.stringify({
+    '@context': 'https://schema.org',
+    '@type':    'BreadcrumbList',
+    'itemListElement': [
+      { '@type': 'ListItem', 'position': 1, 'name': 'Daraja Error Codes',  'item': `${BASE_URL}/` },
+      { '@type': 'ListItem', 'position': 2, 'name': `Error ${entry.code}: ${entry.title}`, 'item': pageUrl }
+    ]
+  }, null, 2);
+
   const html = `<!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><text x='16' y='24' font-family='system-ui,sans-serif' font-size='22' font-weight='700' fill='%23f85149' text-anchor='middle'>!</text></svg>">
-  <title>${esc(entry.code)} — ${esc(entry.title)} | Daraja M-Pesa Error Reference</title>
+  <title>${esc(pageTitle)}</title>
   <meta name="description" content="${esc(metaDesc)}">
+  <meta name="robots" content="index, follow, max-snippet:-1">
   <link rel="canonical" href="${pageUrl}">
   <script type="application/ld+json">
-${jsonld}
+${techArticleJsonld}
+  </script>
+  <script type="application/ld+json">
+${breadcrumbJsonld}
   </script>
   <style>
     ${SHARED_CSS}
@@ -178,7 +226,7 @@ ${causesItems}
       </ul>
 
       <div class="section-label">Fix</div>
-      <p class="fix-text">${esc(entry.fix)}</p>${notesSection}
+      <p class="fix-text">${esc(entry.fix)}</p>${notesSection}${relatedSection}
     </div>
 
     <p class="page-footer">

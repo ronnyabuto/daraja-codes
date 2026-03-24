@@ -4,15 +4,17 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><text x='16' y='24' font-family='system-ui,sans-serif' font-size='22' font-weight='700' fill='%23f85149' text-anchor='middle'>!</text></svg>">
-  <title>401.003.01 — Invalid Access Token (OAuth Step) | Daraja M-Pesa Error Reference</title>
+  <title>Error 401.003.01: Invalid Access Token (OAuth Step) | Daraja M-Pesa Error Reference</title>
   <meta name="description" content="Invalid Access Token (OAuth Step): The access token is invalid during the OAuth authorization step itself. Different from 404.001.03, which occurs when a v">
+  <meta name="robots" content="index, follow, max-snippet:-1">
   <link rel="canonical" href="https://ronnyabuto.github.io/daraja-error-codes/401.003.01.html">
   <script type="application/ld+json">
 {
   "@context": "https://schema.org",
   "@type": "TechArticle",
-  "headline": "401.003.01 — Invalid Access Token (OAuth Step)",
+  "headline": "Error 401.003.01: Invalid Access Token (OAuth Step)",
   "description": "The access token is invalid during the OAuth authorization step itself. Different from 404.001.03, which occurs when a valid-looking but expired token is used on an API call — this one fires when the token is rejected at the authorization layer.",
+  "dateModified": "2026-03-24",
   "url": "https://ronnyabuto.github.io/daraja-error-codes/401.003.01.html",
   "author": {
     "@type": "Person",
@@ -34,6 +36,26 @@
     }
   ],
   "keywords": "daraja error 401.003.01, mpesa error 401.003.01, http error"
+}
+  </script>
+  <script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BreadcrumbList",
+  "itemListElement": [
+    {
+      "@type": "ListItem",
+      "position": 1,
+      "name": "Daraja Error Codes",
+      "item": "https://ronnyabuto.github.io/daraja-error-codes/"
+    },
+    {
+      "@type": "ListItem",
+      "position": 2,
+      "name": "Error 401.003.01: Invalid Access Token (OAuth Step)",
+      "item": "https://ronnyabuto.github.io/daraja-error-codes/401.003.01.html"
+    }
+  ]
 }
   </script>
   <style>
@@ -77,6 +99,10 @@
       padding: 10px 14px; border-radius: 0 6px 6px 0;
       font-size: 13px; color: #555; margin: 0;
     }
+    .related-list { list-style: none; padding: 0; margin: 6px 0; }
+    .related-list li { margin-bottom: 4px; }
+    .related-list a { color: #0066ff; text-decoration: none; font-size: 14px; font-weight: 500; }
+    .related-list a:hover { text-decoration: underline; }
     .page-footer { margin-top: 32px; font-size: 13px; color: #888; text-align: center; }
     .page-footer a { color: #0066ff; text-decoration: none; }
     .page-footer a:hover { text-decoration: underline; }
@@ -109,6 +135,11 @@
       <p class="fix-text">Regenerate a fresh access token using the correct Consumer Key and Secret for the target environment (sandbox vs production). Ensure you are calling the correct base URL: https://sandbox.safaricom.co.ke for sandbox and https://api.safaricom.co.ke for production. Log the raw token value to confirm it is not truncated.</p>
       <div class="section-label">Notes</div>
       <p class="notes-text">Confirmed in official Safaricom GitHub issue thread (LNMOnlineAndroidSample#11). Distinct from 404.001.03 — both relate to token problems, but 401.003.01 is an invalid token during authorization and 404.001.03 is an expired token during API calls. Handle both identically in code: regenerate and retry.</p>
+      <div class="section-label">Related Errors</div>
+      <ul class="related-list">
+        <li><a href="404.001.03.html">Error 404.001.03: Access Token Expired or Missing</a></li>
+        <li><a href="500.001.1001.html">Error 500.001.1001: Wrong Credentials / MerchantValidate Failed</a></li>
+      </ul>
     </div>
 
     <p class="page-footer">

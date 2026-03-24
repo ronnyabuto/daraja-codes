@@ -12,7 +12,12 @@
       "Very common with iOS eSIMs"
     ],
     "fix": "Prompt the user to check their phone and retry. If the issue persists, ask them to dial *234# to update their M-Pesa menu, then retry.",
-    "notes": "This is the most Googled Daraja error. Do not treat it as fatal — always offer a retry flow in your UI."
+    "notes": "This is the most Googled Daraja error. Do not treat it as fatal — always offer a retry flow in your UI.",
+    "related": [
+      "1032",
+      "1019",
+      "1025"
+    ]
   },
   {
     "code": "1032",
@@ -24,7 +29,12 @@
       "User pressed Cancel on the STK prompt",
       "User ignored the prompt until it auto-dismissed"
     ],
-    "fix": "Re-initiate the STK push request. No action needed on the backend — this is a user-side cancellation."
+    "fix": "Re-initiate the STK push request. No action needed on the backend — this is a user-side cancellation.",
+    "related": [
+      "1037",
+      "1019",
+      "1001"
+    ]
   },
   {
     "code": "1",
@@ -36,7 +46,11 @@
       "M-Pesa wallet balance too low",
       "Fuliza limit exhausted or not activated"
     ],
-    "fix": "Inform the user they need to top up their M-Pesa account and retry."
+    "fix": "Inform the user they need to top up their M-Pesa account and retry.",
+    "related": [
+      "1032",
+      "1037"
+    ]
   },
   {
     "code": "1001",
@@ -48,7 +62,11 @@
       "User has another M-Pesa transaction in progress",
       "Previous STK push not yet resolved"
     ],
-    "fix": "Wait 1–2 minutes and retry the payment request."
+    "fix": "Wait 1–2 minutes and retry the payment request.",
+    "related": [
+      "1037",
+      "1032"
+    ]
   },
   {
     "code": "1025",
@@ -61,7 +79,11 @@
       "Temporary M-Pesa system issue"
     ],
     "fix": "Check that your TransactionDesc parameter is under 182 characters. If it is, wait 1–2 minutes and retry.",
-    "notes": "Error code 9999 is the same error and should be handled identically."
+    "notes": "Error code 9999 is the same error and should be handled identically.",
+    "related": [
+      "9999",
+      "1037"
+    ]
   },
   {
     "code": "9999",
@@ -74,7 +96,11 @@
       "TransactionDesc over 182 characters"
     ],
     "fix": "Same fix as error 1025 — check TransactionDesc length, then retry after 1–2 minutes.",
-    "notes": "Treat 9999 and 1025 identically in your error handling logic."
+    "notes": "Treat 9999 and 1025 identically in your error handling logic.",
+    "related": [
+      "1025",
+      "1037"
+    ]
   },
   {
     "code": "Invalid Initiator Info",
@@ -86,7 +112,11 @@
       "User typed the wrong PIN",
       "User has recently changed their PIN and used the old one"
     ],
-    "fix": "Prompt the user to retry and enter their correct M-Pesa PIN. Note: M-Pesa allows a maximum of 3 failed PIN attempts."
+    "fix": "Prompt the user to retry and enter their correct M-Pesa PIN. Note: M-Pesa allows a maximum of 3 failed PIN attempts.",
+    "related": [
+      "1037",
+      "1032"
+    ]
   },
   {
     "code": "400.002.02",
@@ -101,7 +131,11 @@
       "Invalid Amount: Amount is zero, negative, non-numeric, or formatted with decimal places when an integer is expected"
     ],
     "fix": "Read the full errorMessage field — the suffix after 'Bad Request - ' tells you exactly which field to fix. For BusinessShortCode: in Python requests change data=payload to json=payload and ensure Content-Type is application/json. For Timestamp: use the exact format YYYYMMDDHHmmss with no separators. For Amount: send a positive integer with no decimals.",
-    "notes": "This code is a generic Daraja request validation error. The errorMessage changes based on which field is invalid — always log the full errorMessage, not just the code."
+    "notes": "This code is a generic Daraja request validation error. The errorMessage changes based on which field is invalid — always log the full errorMessage, not just the code.",
+    "related": [
+      "500.001.1001",
+      "401.003.01"
+    ]
   },
   {
     "code": "Invalid Access Token (Post Go-Live)",
@@ -116,7 +150,11 @@
       "Passkey not updated to the live passkey received via email"
     ],
     "fix": "1) Verify all four values are live: Consumer Key, Consumer Secret, Passkey, and base URL. 2) If all four are correct and it still fails, email apisupport@safaricom.co.ke with subject 'Invalid Access Token Error After Going Live', and include your Daraja app ID and shortcode. The issue is usually that Safaricom hasn't finished internal approval.",
-    "notes": "This is not a code issue 90% of the time. Do not spend hours debugging — escalate to Safaricom support early."
+    "notes": "This is not a code issue 90% of the time. Do not spend hours debugging — escalate to Safaricom support early.",
+    "related": [
+      "404.001.03",
+      "401.003.01"
+    ]
   },
   {
     "code": "C2B Sandbox Callbacks Unreliable",
@@ -130,7 +168,11 @@
       "Using ngrok on a free tier (can be blocked by Safaricom)"
     ],
     "fix": "For C2B specifically, the developer community consensus is to test against a live deployment rather than sandbox. Deploy to a VPS or platform like Railway, register your real HTTPS URL, and test with small live transactions.",
-    "notes": "This is a known, long-standing Daraja sandbox limitation, not a bug in your code. Safaricom does not allow ngrok on production callback URLs."
+    "notes": "This is a known, long-standing Daraja sandbox limitation, not a bug in your code. Safaricom does not allow ngrok on production callback URLs.",
+    "related": [
+      "1037",
+      "1032"
+    ]
   },
   {
     "code": "2001",
@@ -145,7 +187,11 @@
       "Initiator does not belong to the shortcode being used"
     ],
     "fix": "Download a fresh copy of the public key certificate from your Daraja portal (not from a GitHub repo — those are often outdated G2 certificates). Re-encrypt your initiator password using that certificate and update your SecurityCredential value. Also verify the InitiatorName matches exactly what is on the Daraja portal under your app credentials.",
-    "notes": "Do not confuse this with the STK Push 'Invalid Initiator Info' entry — that one is about a user entering the wrong PIN. This error code 2001 appears in B2C and B2B result callbacks and is entirely a developer credentials issue."
+    "notes": "Do not confuse this with the STK Push 'Invalid Initiator Info' entry — that one is about a user entering the wrong PIN. This error code 2001 appears in B2C and B2B result callbacks and is entirely a developer credentials issue.",
+    "related": [
+      "500.001.1001",
+      "400.002.02"
+    ]
   },
   {
     "code": "1019",
@@ -158,7 +204,11 @@
       "User's phone was slow to display the prompt due to network lag"
     ],
     "fix": "Inform the user their payment request expired and offer them a button to initiate a fresh STK push. Implement a polling loop using the STK Push Query API (stkpushquery endpoint) to catch this state proactively before relying solely on the callback.",
-    "notes": "Different from error 1037 — 1037 means the prompt never reached the phone. 1019 means the prompt arrived but the user did not act on it in time."
+    "notes": "Different from error 1037 — 1037 means the prompt never reached the phone. 1019 means the prompt arrived but the user did not act on it in time.",
+    "related": [
+      "1037",
+      "1032"
+    ]
   },
   {
     "code": "500.001.1001",
@@ -174,7 +224,11 @@
       "Merchant does not exist: The BusinessShortCode is not registered or activated on the Daraja platform for the current environment"
     ],
     "fix": "Check the full errorMessage field first. If it says '[MerchantValidate] - Wrong credentials': generate the Timestamp once, store it in a variable, and use that exact same variable both to build the Password and as the Timestamp field — never generate it twice. Verify your passkey matches the environment. If it says 'Merchant does not exist': confirm your shortcode is correctly registered and that you are not mixing sandbox and production shortcodes.",
-    "notes": "This error appears in the errorCode field of the immediate API response (not in a callback). The errorMessage will be either '[MerchantValidate] - Wrong credentials' or 'Merchant does not exist' — these are two different root causes under the same code. Confirmed in official Safaricom GitHub issue trackers (LNMOnlineAndroidSample issues #8 and #50)."
+    "notes": "This error appears in the errorCode field of the immediate API response (not in a callback). The errorMessage will be either '[MerchantValidate] - Wrong credentials' or 'Merchant does not exist' — these are two different root causes under the same code. Confirmed in official Safaricom GitHub issue trackers (LNMOnlineAndroidSample issues #8 and #50).",
+    "related": [
+      "400.002.02",
+      "404.001.03"
+    ]
   },
   {
     "code": "401.003.01",
@@ -188,7 +242,11 @@
       "Token was revoked or the Daraja app credentials were rotated after the token was issued"
     ],
     "fix": "Regenerate a fresh access token using the correct Consumer Key and Secret for the target environment (sandbox vs production). Ensure you are calling the correct base URL: https://sandbox.safaricom.co.ke for sandbox and https://api.safaricom.co.ke for production. Log the raw token value to confirm it is not truncated.",
-    "notes": "Confirmed in official Safaricom GitHub issue thread (LNMOnlineAndroidSample#11). Distinct from 404.001.03 — both relate to token problems, but 401.003.01 is an invalid token during authorization and 404.001.03 is an expired token during API calls. Handle both identically in code: regenerate and retry."
+    "notes": "Confirmed in official Safaricom GitHub issue thread (LNMOnlineAndroidSample#11). Distinct from 404.001.03 — both relate to token problems, but 401.003.01 is an invalid token during authorization and 404.001.03 is an expired token during API calls. Handle both identically in code: regenerate and retry.",
+    "related": [
+      "404.001.03",
+      "500.001.1001"
+    ]
   },
   {
     "code": "404.001.03",
@@ -203,6 +261,10 @@
       "Token was generated in sandbox but used against the production endpoint or vice versa"
     ],
     "fix": "Implement token caching with automatic refresh: store the token and its expiry time, and regenerate it before it expires rather than on every request. A safe pattern is to refresh the token when it is within 5 minutes of expiry. Ensure your Authorization header is formatted exactly as: 'Bearer <token>' with a space between Bearer and the token value.",
-    "notes": "This is different from the Go-Live access token issue in this list. That one happens because Safaricom has not yet internally approved the live app. This one (404.001.03) happens during normal operation when token lifecycle is not managed correctly."
+    "notes": "This is different from the Go-Live access token issue in this list. That one happens because Safaricom has not yet internally approved the live app. This one (404.001.03) happens during normal operation when token lifecycle is not managed correctly.",
+    "related": [
+      "401.003.01",
+      "500.001.1001"
+    ]
   }
 ]
