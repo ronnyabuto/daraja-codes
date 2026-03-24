@@ -281,6 +281,20 @@
       margin: 0;
     }
 
+    mark {
+      background: #fff0a0;
+      color: inherit;
+      border-radius: 2px;
+      padding: 0 1px;
+    }
+
+    #result-count {
+      display: none;
+      font-size: 13px;
+      color: #888;
+      margin: 0 0 14px;
+    }
+
     /* Footer */
     .site-footer {
       margin-top: 48px;
@@ -345,6 +359,7 @@
       </div>
     </div>
 
+    <p id="result-count"></p>
     <div id="results"></div>
     <div id="empty-state">No matching errors found. Open an issue on GitHub to add this error code.</div>
 
@@ -357,6 +372,7 @@
 
   </div>
 
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/fuse.js/7.0.0/fuse.min.js"></script>
   <script src="errors.js"></script>
   <script>
     (function () {
@@ -365,13 +381,32 @@
         errorCountEl.textContent = ERRORS.length;
       }
 
-      var currentQuery = "";
+      var currentQuery  = "";
       var currentFilter = "All";
 
-      var resultsEl = document.getElementById("results");
-      var emptyStateEl = document.getElementById("empty-state");
-      var searchEl = document.getElementById("search");
-      var filterBtns = document.querySelectorAll(".filter-btn");
+      var resultsEl     = document.getElementById("results");
+      var emptyStateEl  = document.getElementById("empty-state");
+      var searchEl      = document.getElementById("search");
+      var resultCountEl = document.getElementById("result-count");
+      var filterBtns    = document.querySelectorAll(".filter-btn");
+
+      // Fuzzy search — searches all fields simultaneously, tolerates typos.
+      // code is weighted highest so searching "1037" always surfaces the right card first.
+      var fuse = new Fuse(ERRORS, {
+        threshold:        0.35,   // 0 = exact only, 1 = match anything; 0.35 is typo-tolerant but focused
+        ignoreLocation:   true,   // don't penalise matches deep inside description/fix strings
+        minMatchCharLength: 2,
+        includeMatches:   true,   // needed to highlight matched text inside cards
+        keys: [
+          { name: "code",        weight: 3.0 },
+          { name: "title",       weight: 2.0 },
+          { name: "api",         weight: 1.5 },
+          { name: "description", weight: 1.5 },
+          { name: "causes",      weight: 1.0 },
+          { name: "fix",         weight: 1.0 },
+          { name: "notes",       weight: 0.8 }
+        ]
+      });
 
       function slugifyApi(api) {
         return api.toLowerCase().replace(/\s+/g, "-");
@@ -386,38 +421,85 @@
           .replace(/'/g, "&#39;");
       }
 
-      function buildCard(entry) {
+      // Wrap matched character ranges in <mark>. Falls back to plain escapeHtml when
+      // there are no match indices (e.g. browsing without a query active).
+      function applyHighlight(text, indices) {
+        if (!indices || !indices.length) return escapeHtml(text);
+        var result = "";
+        var cursor = 0;
+        for (var i = 0; i < indices.length; i++) {
+          var start = indices[i][0];
+          var end   = indices[i][1];
+          result += escapeHtml(text.slice(cursor, start));
+          result += "<mark>" + escapeHtml(text.slice(start, end + 1)) + "</mark>";
+          cursor = end + 1;
+        }
+        result += escapeHtml(text.slice(cursor));
+        return result;
+      }
+
+      // Pull Fuse match indices for a specific field.
+      // refIndex is required for array fields (e.g. causes[2]).
+      function getIndices(matches, key, refIndex) {
+        if (!matches) return null;
+        for (var i = 0; i < matches.length; i++) {
+          var m = matches[i];
+          if (m.key === key) {
+            if (refIndex !== undefined) {
+              if (m.refIndex === refIndex) return m.indices;
+            } else {
+              return m.indices;
+            }
+          }
+        }
+        return null;
+      }
+
+      // matches is the Fuse matches array for this entry, or null when no query is active.
+      function buildCard(entry, matches) {
         var slug = slugifyApi(entry.api);
+
         var causesHtml = "";
         for (var i = 0; i < entry.causes.length; i++) {
-          causesHtml += "<li>" + escapeHtml(entry.causes[i]) + "</li>";
+          causesHtml += "<li>" + applyHighlight(entry.causes[i], getIndices(matches, "causes", i)) + "</li>";
         }
 
         var notesHtml = "";
         if (entry.notes) {
           notesHtml =
             '<div class="section-label">Notes</div>' +
-            '<p class="notes-text">' + escapeHtml(entry.notes) + "</p>";
+            '<p class="notes-text">' + applyHighlight(entry.notes, getIndices(matches, "notes")) + "</p>";
         }
 
         return (
           '<div class="card">' +
           '<div class="card-top-row">' +
-          '<span class="code">' + escapeHtml(entry.code) + "</span>" +
+          '<span class="code">'     + applyHighlight(entry.code,  getIndices(matches, "code"))  + "</span>" +
           '<span class="api-badge api-' + escapeHtml(slug) + '">' + escapeHtml(entry.api) + "</span>" +
           "</div>" +
-          '<h2 class="card-title">' + escapeHtml(entry.title) + "</h2>" +
-          '<p class="description">' + escapeHtml(entry.description) + "</p>" +
+          '<h2 class="card-title">' + applyHighlight(entry.title, getIndices(matches, "title")) + "</h2>" +
+          '<p class="description">' + applyHighlight(entry.description, getIndices(matches, "description")) + "</p>" +
           '<div class="section-label">Likely Causes</div>' +
           "<ul>" + causesHtml + "</ul>" +
           '<div class="section-label">Fix</div>' +
-          '<p class="fix-text">' + escapeHtml(entry.fix) + "</p>" +
+          '<p class="fix-text">'    + applyHighlight(entry.fix,   getIndices(matches, "fix"))   + "</p>" +
           notesHtml +
           "</div>"
         );
       }
 
-      function renderCards(entries) {
+      function renderCards(entries, matchMap) {
+        // Show "X of Y errors" only when a filter or query is active
+        var isFiltered = currentQuery.trim() || currentFilter !== "All";
+        if (resultCountEl) {
+          if (isFiltered) {
+            resultCountEl.textContent = entries.length + " of " + ERRORS.length + " errors";
+            resultCountEl.style.display = "block";
+          } else {
+            resultCountEl.style.display = "none";
+          }
+        }
+
         if (entries.length === 0) {
           resultsEl.style.display = "none";
           emptyStateEl.style.display = "block";
@@ -428,54 +510,54 @@
 
         var html = "";
         for (var i = 0; i < entries.length; i++) {
-          html += buildCard(entries[i]);
+          var m = matchMap ? matchMap[entries[i].code] : null;
+          html += buildCard(entries[i], m);
         }
         resultsEl.innerHTML = html;
       }
 
       function filterAndRender() {
-        var filtered = ERRORS;
+        var entries  = [];
+        var matchMap = null;
 
+        if (currentQuery.trim()) {
+          // Fuzzy search across all fields; Fuse returns results ranked by score
+          var fuseResults = fuse.search(currentQuery.trim());
+          matchMap = {};
+          for (var i = 0; i < fuseResults.length; i++) {
+            matchMap[fuseResults[i].item.code] = fuseResults[i].matches;
+            entries.push(fuseResults[i].item);
+          }
+        } else {
+          entries = ERRORS.slice();
+        }
+
+        // Category filter stacks on top of fuzzy results
         if (currentFilter !== "All") {
-          filtered = filtered.filter(function (e) {
-            return e.api === currentFilter;
-          });
+          entries = entries.filter(function (e) { return e.api === currentFilter; });
         }
 
-        if (currentQuery !== "") {
-          var q = currentQuery.toLowerCase();
-          filtered = filtered.filter(function (e) {
-            return (
-              e.code.toLowerCase().indexOf(q) !== -1 ||
-              e.title.toLowerCase().indexOf(q) !== -1 ||
-              e.description.toLowerCase().indexOf(q) !== -1 ||
-              e.causes.join(" ").toLowerCase().indexOf(q) !== -1 ||
-              e.fix.toLowerCase().indexOf(q) !== -1
-            );
-          });
-        }
-
-        renderCards(filtered);
+        renderCards(entries, matchMap);
       }
 
       searchEl.addEventListener("input", function () {
         currentQuery = searchEl.value;
-        document.title = currentQuery.trim() ? "Error " + currentQuery.trim() + " \u2014 Daraja M-Pesa API Reference" : "Daraja Error Codes \u2014 M-Pesa API Error Reference";
+        document.title = currentQuery.trim()
+          ? "Error " + currentQuery.trim() + " \u2014 Daraja M-Pesa API Reference"
+          : "Daraja Error Codes \u2014 M-Pesa API Error Reference";
         filterAndRender();
       });
 
       filterBtns.forEach(function (btn) {
         btn.addEventListener("click", function () {
           currentFilter = btn.getAttribute("data-filter");
-          filterBtns.forEach(function (b) {
-            b.classList.remove("active");
-          });
+          filterBtns.forEach(function (b) { b.classList.remove("active"); });
           btn.classList.add("active");
           filterAndRender();
         });
       });
 
-      renderCards(ERRORS);
+      renderCards(ERRORS, null);
     })();
   </script>
 </body>
