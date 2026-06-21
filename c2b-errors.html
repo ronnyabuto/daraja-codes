@@ -4,70 +4,32 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><text x='16' y='24' font-family='system-ui,sans-serif' font-size='22' font-weight='700' fill='%23f85149' text-anchor='middle'>!</text></svg>">
-  <title>Error 1019: Transaction Expired | Daraja M-Pesa Error Reference</title>
-  <meta name="description" content="Daraja error 1019 means the STK prompt arrived but the user did not act in time (expired) — offer them a fresh STK push.">
+  <title>All C2B Daraja Errors — Codes, Causes &amp; Fixes | Daraja M-Pesa Error Reference</title>
+  <meta name="description" content="Every Safaricom Daraja C2B error code with a one-line answer, likely causes, and a copy-paste fix.">
   <meta name="robots" content="index, follow, max-snippet:-1">
-  <link rel="canonical" href="https://ronnyabuto.github.io/daraja-error-codes/1019.html">
+  <link rel="canonical" href="https://ronnyabuto.github.io/daraja-error-codes/c2b-errors.html">
   <script type="application/ld+json">
 {
   "@context": "https://schema.org",
-  "@type": "TechArticle",
-  "headline": "Error 1019: Transaction Expired",
-  "description": "The STK Push transaction exceeded the allowable processing time before the user responded.",
+  "@type": "CollectionPage",
+  "name": "All C2B Daraja Errors — Codes, Causes & Fixes",
+  "url": "https://ronnyabuto.github.io/daraja-error-codes/c2b-errors.html",
   "dateModified": "2026-06-21",
-  "url": "https://ronnyabuto.github.io/daraja-error-codes/1019.html",
-  "author": {
-    "@type": "Person",
-    "name": "Ronny Nyabuto"
+  "about": {
+    "@type": "Thing",
+    "name": "Safaricom Daraja C2B API"
   },
-  "publisher": {
-    "@type": "Organization",
-    "name": "Daraja Error Codes",
-    "url": "https://ronnyabuto.github.io/daraja-error-codes"
-  },
-  "about": [
-    {
-      "@type": "Thing",
-      "name": "Safaricom Daraja API"
-    },
-    {
-      "@type": "Thing",
-      "name": "STK Push"
-    }
-  ],
-  "keywords": "daraja error 1019, mpesa error 1019, stk push error"
-}
-  </script>
-  <script type="application/ld+json">
-{
-  "@context": "https://schema.org",
-  "@type": "FAQPage",
-  "mainEntity": [
-    {
-      "@type": "Question",
-      "name": "What does Daraja error 1019 mean?",
-      "acceptedAnswer": {
-        "@type": "Answer",
-        "text": "Daraja error 1019 means the STK prompt arrived but the user did not act in time (expired) — offer them a fresh STK push."
+  "mainEntity": {
+    "@type": "ItemList",
+    "itemListElement": [
+      {
+        "@type": "ListItem",
+        "position": 1,
+        "name": "Error C2B Sandbox Callbacks Unreliable: Confirmation/Validation Callbacks Not Firing in Sandbox",
+        "url": "https://ronnyabuto.github.io/daraja-error-codes/c2b-sandbox-callbacks-unreliable.html"
       }
-    },
-    {
-      "@type": "Question",
-      "name": "How do I fix Daraja error 1019?",
-      "acceptedAnswer": {
-        "@type": "Answer",
-        "text": "Inform the user their payment request expired and offer them a button to initiate a fresh STK push. Implement a polling loop using the STK Push Query API (stkpushquery endpoint) to catch this state proactively before relying solely on the callback."
-      }
-    },
-    {
-      "@type": "Question",
-      "name": "What causes Daraja error 1019?",
-      "acceptedAnswer": {
-        "@type": "Answer",
-        "text": "User did not respond to the STK prompt before it timed out (typically 1–3 minutes depending on phone model); User's phone was slow to display the prompt due to network lag."
-      }
-    }
-  ]
+    ]
+  }
 }
   </script>
   <script type="application/ld+json">
@@ -84,14 +46,8 @@
     {
       "@type": "ListItem",
       "position": 2,
-      "name": "STK Push Errors",
-      "item": "https://ronnyabuto.github.io/daraja-error-codes/stk-push-errors.html"
-    },
-    {
-      "@type": "ListItem",
-      "position": 3,
-      "name": "Error 1019: Transaction Expired",
-      "item": "https://ronnyabuto.github.io/daraja-error-codes/1019.html"
+      "name": "C2B Errors",
+      "item": "https://ronnyabuto.github.io/daraja-error-codes/c2b-errors.html"
     }
   ]
 }
@@ -169,35 +125,12 @@
     <a href="https://ronnyabuto.github.io/daraja-error-codes/" class="back">← All Daraja Error Codes</a>
 
     <article class="card">
-      <div class="card-top-row">
-        <span class="code">1019</span>
-        <a class="api-badge api-stk-push" href="stk-push-errors.html">STK Push</a>
-      </div>
-      <h1>Transaction Expired</h1>
-      <p class="quick-answer"><strong>Quick answer:</strong> Daraja error 1019 means the STK prompt arrived but the user did not act in time (expired) — offer them a fresh STK push.</p>
-      <p>The STK Push transaction exceeded the allowable processing time before the user responded.</p>
+      <h1>All C2B Daraja Errors — Codes, Causes &amp; Fixes</h1>
+      <p>Every Safaricom Daraja C2B error code with a one-line answer, likely causes, and a copy-paste fix.</p>
 
-      <div class="section-label">Likely Causes</div>
-      <ul>
-        <li>User did not respond to the STK prompt before it timed out (typically 1–3 minutes depending on phone model)</li>
-        <li>User&#39;s phone was slow to display the prompt due to network lag</li>
-      </ul>
-
-      <div class="section-label">Fix</div>
-      <p class="fix-text">Inform the user their payment request expired and offer them a button to initiate a fresh STK push. Implement a polling loop using the STK Push Query API (stkpushquery endpoint) to catch this state proactively before relying solely on the callback.</p>
-      <div class="section-label">Notes</div>
-      <p class="notes-text">Different from error 1037 — 1037 means the prompt never reached the phone. 1019 means the prompt arrived but the user did not act on it in time.</p>
-      <div class="section-label">Frequently Asked Questions</div>
-      <p class="faq-q">What does Daraja error 1019 mean?</p>
-      <p class="faq-a">Daraja error 1019 means the STK prompt arrived but the user did not act in time (expired) — offer them a fresh STK push.</p>
-      <p class="faq-q">How do I fix Daraja error 1019?</p>
-      <p class="faq-a">Inform the user their payment request expired and offer them a button to initiate a fresh STK push. Implement a polling loop using the STK Push Query API (stkpushquery endpoint) to catch this state proactively before relying solely on the callback.</p>
-      <p class="faq-q">What causes Daraja error 1019?</p>
-      <p class="faq-a">User did not respond to the STK prompt before it timed out (typically 1–3 minutes depending on phone model); User&#39;s phone was slow to display the prompt due to network lag.</p>
-      <div class="section-label">Related Errors</div>
-      <ul class="related-list">
-        <li><a href="1037.html">Error 1037: MSISDN Unreachable / No Response From User</a></li>
-        <li><a href="1032.html">Error 1032: Request Cancelled by User</a></li>
+      <div class="section-label">C2B Error Codes</div>
+      <ul class="hub-list">
+        <li><a href="c2b-sandbox-callbacks-unreliable.html">Error C2B Sandbox Callbacks Unreliable: Confirmation/Validation Callbacks Not Firing in Sandbox</a><span class="ha">C2B sandbox callbacks fire only ~40% of the time by design — test C2B against a live deployment, not the sandbox.</span></li>
       </ul>
     </article>
 

@@ -4,70 +4,50 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><text x='16' y='24' font-family='system-ui,sans-serif' font-size='22' font-weight='700' fill='%23f85149' text-anchor='middle'>!</text></svg>">
-  <title>Error 1019: Transaction Expired | Daraja M-Pesa Error Reference</title>
-  <meta name="description" content="Daraja error 1019 means the STK prompt arrived but the user did not act in time (expired) — offer them a fresh STK push.">
+  <title>All HTTP Daraja Errors — Codes, Causes &amp; Fixes | Daraja M-Pesa Error Reference</title>
+  <meta name="description" content="Every Safaricom Daraja HTTP error code with a one-line answer, likely causes, and a copy-paste fix.">
   <meta name="robots" content="index, follow, max-snippet:-1">
-  <link rel="canonical" href="https://ronnyabuto.github.io/daraja-error-codes/1019.html">
+  <link rel="canonical" href="https://ronnyabuto.github.io/daraja-error-codes/http-errors.html">
   <script type="application/ld+json">
 {
   "@context": "https://schema.org",
-  "@type": "TechArticle",
-  "headline": "Error 1019: Transaction Expired",
-  "description": "The STK Push transaction exceeded the allowable processing time before the user responded.",
+  "@type": "CollectionPage",
+  "name": "All HTTP Daraja Errors — Codes, Causes & Fixes",
+  "url": "https://ronnyabuto.github.io/daraja-error-codes/http-errors.html",
   "dateModified": "2026-06-21",
-  "url": "https://ronnyabuto.github.io/daraja-error-codes/1019.html",
-  "author": {
-    "@type": "Person",
-    "name": "Ronny Nyabuto"
+  "about": {
+    "@type": "Thing",
+    "name": "Safaricom Daraja HTTP API"
   },
-  "publisher": {
-    "@type": "Organization",
-    "name": "Daraja Error Codes",
-    "url": "https://ronnyabuto.github.io/daraja-error-codes"
-  },
-  "about": [
-    {
-      "@type": "Thing",
-      "name": "Safaricom Daraja API"
-    },
-    {
-      "@type": "Thing",
-      "name": "STK Push"
-    }
-  ],
-  "keywords": "daraja error 1019, mpesa error 1019, stk push error"
-}
-  </script>
-  <script type="application/ld+json">
-{
-  "@context": "https://schema.org",
-  "@type": "FAQPage",
-  "mainEntity": [
-    {
-      "@type": "Question",
-      "name": "What does Daraja error 1019 mean?",
-      "acceptedAnswer": {
-        "@type": "Answer",
-        "text": "Daraja error 1019 means the STK prompt arrived but the user did not act in time (expired) — offer them a fresh STK push."
+  "mainEntity": {
+    "@type": "ItemList",
+    "itemListElement": [
+      {
+        "@type": "ListItem",
+        "position": 1,
+        "name": "Error 400.002.02: Bad Request — Invalid Request Parameter",
+        "url": "https://ronnyabuto.github.io/daraja-error-codes/400.002.02.html"
+      },
+      {
+        "@type": "ListItem",
+        "position": 2,
+        "name": "Error 401.003.01: Invalid Access Token (OAuth Step)",
+        "url": "https://ronnyabuto.github.io/daraja-error-codes/401.003.01.html"
+      },
+      {
+        "@type": "ListItem",
+        "position": 3,
+        "name": "Error 404.001.03: Access Token Expired or Missing",
+        "url": "https://ronnyabuto.github.io/daraja-error-codes/404.001.03.html"
+      },
+      {
+        "@type": "ListItem",
+        "position": 4,
+        "name": "Error 429: Rate Limited — Spike Arrest Violation",
+        "url": "https://ronnyabuto.github.io/daraja-error-codes/429.html"
       }
-    },
-    {
-      "@type": "Question",
-      "name": "How do I fix Daraja error 1019?",
-      "acceptedAnswer": {
-        "@type": "Answer",
-        "text": "Inform the user their payment request expired and offer them a button to initiate a fresh STK push. Implement a polling loop using the STK Push Query API (stkpushquery endpoint) to catch this state proactively before relying solely on the callback."
-      }
-    },
-    {
-      "@type": "Question",
-      "name": "What causes Daraja error 1019?",
-      "acceptedAnswer": {
-        "@type": "Answer",
-        "text": "User did not respond to the STK prompt before it timed out (typically 1–3 minutes depending on phone model); User's phone was slow to display the prompt due to network lag."
-      }
-    }
-  ]
+    ]
+  }
 }
   </script>
   <script type="application/ld+json">
@@ -84,14 +64,8 @@
     {
       "@type": "ListItem",
       "position": 2,
-      "name": "STK Push Errors",
-      "item": "https://ronnyabuto.github.io/daraja-error-codes/stk-push-errors.html"
-    },
-    {
-      "@type": "ListItem",
-      "position": 3,
-      "name": "Error 1019: Transaction Expired",
-      "item": "https://ronnyabuto.github.io/daraja-error-codes/1019.html"
+      "name": "HTTP Errors",
+      "item": "https://ronnyabuto.github.io/daraja-error-codes/http-errors.html"
     }
   ]
 }
@@ -169,35 +143,15 @@
     <a href="https://ronnyabuto.github.io/daraja-error-codes/" class="back">← All Daraja Error Codes</a>
 
     <article class="card">
-      <div class="card-top-row">
-        <span class="code">1019</span>
-        <a class="api-badge api-stk-push" href="stk-push-errors.html">STK Push</a>
-      </div>
-      <h1>Transaction Expired</h1>
-      <p class="quick-answer"><strong>Quick answer:</strong> Daraja error 1019 means the STK prompt arrived but the user did not act in time (expired) — offer them a fresh STK push.</p>
-      <p>The STK Push transaction exceeded the allowable processing time before the user responded.</p>
+      <h1>All HTTP Daraja Errors — Codes, Causes &amp; Fixes</h1>
+      <p>Every Safaricom Daraja HTTP error code with a one-line answer, likely causes, and a copy-paste fix.</p>
 
-      <div class="section-label">Likely Causes</div>
-      <ul>
-        <li>User did not respond to the STK prompt before it timed out (typically 1–3 minutes depending on phone model)</li>
-        <li>User&#39;s phone was slow to display the prompt due to network lag</li>
-      </ul>
-
-      <div class="section-label">Fix</div>
-      <p class="fix-text">Inform the user their payment request expired and offer them a button to initiate a fresh STK push. Implement a polling loop using the STK Push Query API (stkpushquery endpoint) to catch this state proactively before relying solely on the callback.</p>
-      <div class="section-label">Notes</div>
-      <p class="notes-text">Different from error 1037 — 1037 means the prompt never reached the phone. 1019 means the prompt arrived but the user did not act on it in time.</p>
-      <div class="section-label">Frequently Asked Questions</div>
-      <p class="faq-q">What does Daraja error 1019 mean?</p>
-      <p class="faq-a">Daraja error 1019 means the STK prompt arrived but the user did not act in time (expired) — offer them a fresh STK push.</p>
-      <p class="faq-q">How do I fix Daraja error 1019?</p>
-      <p class="faq-a">Inform the user their payment request expired and offer them a button to initiate a fresh STK push. Implement a polling loop using the STK Push Query API (stkpushquery endpoint) to catch this state proactively before relying solely on the callback.</p>
-      <p class="faq-q">What causes Daraja error 1019?</p>
-      <p class="faq-a">User did not respond to the STK prompt before it timed out (typically 1–3 minutes depending on phone model); User&#39;s phone was slow to display the prompt due to network lag.</p>
-      <div class="section-label">Related Errors</div>
-      <ul class="related-list">
-        <li><a href="1037.html">Error 1037: MSISDN Unreachable / No Response From User</a></li>
-        <li><a href="1032.html">Error 1032: Request Cancelled by User</a></li>
+      <div class="section-label">HTTP Error Codes</div>
+      <ul class="hub-list">
+        <li><a href="400.002.02.html">Error 400.002.02: Bad Request — Invalid Request Parameter</a><span class="ha">Daraja error 400.002.02 is a request-validation error — read the errorMessage suffix; it names the exact invalid field (BusinessShortCode, Timestamp, Amount, or CheckoutRequestID).</span></li>
+        <li><a href="401.003.01.html">Error 401.003.01: Invalid Access Token (OAuth Step)</a><span class="ha">Error 401.003.01 means the access token was rejected at the OAuth step — regenerate it for the correct environment (sandbox vs production).</span></li>
+        <li><a href="404.001.03.html">Error 404.001.03: Access Token Expired or Missing</a><span class="ha">Error 404.001.03 means your access token is expired or missing — cache the token and refresh before its 1-hour expiry instead of regenerating per request.</span></li>
+        <li><a href="429.html">Error 429: Rate Limited — Spike Arrest Violation</a><span class="ha">HTTP 429 &#39;Spike arrest&#39; means Daraja rate-limited you — back off and retry the same request with exponential backoff; do not drop it.</span></li>
       </ul>
     </article>
 

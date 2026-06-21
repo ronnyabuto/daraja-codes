@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><text x='16' y='24' font-family='system-ui,sans-serif' font-size='22' font-weight='700' fill='%23f85149' text-anchor='middle'>!</text></svg>">
   <title>Error 1001: Transaction In Progress | Daraja M-Pesa Error Reference</title>
-  <meta name="description" content="Transaction In Progress: M-Pesa cannot lock the subscriber because they already have an active USSD session processing another transaction.">
+  <meta name="description" content="Daraja error 1001 means the subscriber already has a transaction in progress — wait 1–2 minutes and retry.">
   <meta name="robots" content="index, follow, max-snippet:-1">
   <link rel="canonical" href="https://ronnyabuto.github.io/daraja-error-codes/1001.html">
   <script type="application/ld+json">
@@ -41,6 +41,38 @@
   <script type="application/ld+json">
 {
   "@context": "https://schema.org",
+  "@type": "FAQPage",
+  "mainEntity": [
+    {
+      "@type": "Question",
+      "name": "What does Daraja error 1001 mean?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Daraja error 1001 means the subscriber already has a transaction in progress — wait 1–2 minutes and retry."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "How do I fix Daraja error 1001?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Wait 1–2 minutes and retry the payment request."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "What causes Daraja error 1001?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "User has another M-Pesa transaction in progress; Previous STK push not yet resolved."
+      }
+    }
+  ]
+}
+  </script>
+  <script type="application/ld+json">
+{
+  "@context": "https://schema.org",
   "@type": "BreadcrumbList",
   "itemListElement": [
     {
@@ -52,6 +84,12 @@
     {
       "@type": "ListItem",
       "position": 2,
+      "name": "STK Push Errors",
+      "item": "https://ronnyabuto.github.io/daraja-error-codes/stk-push-errors.html"
+    },
+    {
+      "@type": "ListItem",
+      "position": 3,
       "name": "Error 1001: Transaction In Progress",
       "item": "https://ronnyabuto.github.io/daraja-error-codes/1001.html"
     }
@@ -80,9 +118,20 @@
     .api-http     { background: #f8d7da; color: #721c24; }
     .api-c2b      { background: #d1ecf1; color: #0c5460; }
     .api-b2c      { background: #d4edda; color: #155724; }
+    .api-b2b      { background: #d4edda; color: #155724; }
     .api-go-live  { background: #e2d9f3; color: #4a235a; }
     h1 { font-size: 22px; font-weight: 700; margin: 0 0 12px; color: #111; }
     p  { font-size: 14px; color: #444; margin: 0 0 8px; }
+    .quick-answer {
+      background: #eef5ff; border-left: 3px solid #0066ff;
+      padding: 12px 14px; border-radius: 0 6px 6px 0;
+      font-size: 15px; color: #14315c; margin: 0 0 16px;
+    }
+    .verified {
+      display: inline-block; font-size: 12px; font-weight: 600;
+      color: #155724; background: #e8f6ec; border: 1px solid #b7e1c1;
+      padding: 3px 10px; border-radius: 12px; margin: 0 0 12px;
+    }
     .section-label {
       font-size: 11px; font-weight: 700; text-transform: uppercase;
       letter-spacing: 0.08em; color: #666; margin-top: 18px; margin-bottom: 6px;
@@ -99,10 +148,13 @@
       padding: 10px 14px; border-radius: 0 6px 6px 0;
       font-size: 13px; color: #555; margin: 0;
     }
-    .related-list { list-style: none; padding: 0; margin: 6px 0; }
-    .related-list li { margin-bottom: 4px; }
-    .related-list a { color: #0066ff; text-decoration: none; font-size: 14px; font-weight: 500; }
-    .related-list a:hover { text-decoration: underline; }
+    .faq-q { font-size: 14px; font-weight: 700; color: #222; margin: 12px 0 2px; }
+    .faq-a { font-size: 14px; color: #444; margin: 0 0 8px; }
+    .related-list, .hub-list { list-style: none; padding: 0; margin: 6px 0; }
+    .related-list li, .hub-list li { margin-bottom: 10px; }
+    .related-list a, .hub-list a { color: #0066ff; text-decoration: none; font-size: 14px; font-weight: 600; }
+    .related-list a:hover, .hub-list a:hover { text-decoration: underline; }
+    .hub-list .ha { display: block; font-size: 13px; font-weight: 400; color: #555; margin-top: 2px; }
     .page-footer { margin-top: 32px; font-size: 13px; color: #888; text-align: center; }
     .page-footer a { color: #0066ff; text-decoration: none; }
     .page-footer a:hover { text-decoration: underline; }
@@ -113,15 +165,16 @@
   </style>
 </head>
 <body>
-  <div class="container">
+  <main class="container">
     <a href="https://ronnyabuto.github.io/daraja-error-codes/" class="back">← All Daraja Error Codes</a>
 
-    <div class="card">
+    <article class="card">
       <div class="card-top-row">
         <span class="code">1001</span>
-        <span class="api-badge api-stk-push">STK Push</span>
+        <a class="api-badge api-stk-push" href="stk-push-errors.html">STK Push</a>
       </div>
       <h1>Transaction In Progress</h1>
+      <p class="quick-answer"><strong>Quick answer:</strong> Daraja error 1001 means the subscriber already has a transaction in progress — wait 1–2 minutes and retry.</p>
       <p>M-Pesa cannot lock the subscriber because they already have an active USSD session processing another transaction.</p>
 
       <div class="section-label">Likely Causes</div>
@@ -132,17 +185,27 @@
 
       <div class="section-label">Fix</div>
       <p class="fix-text">Wait 1–2 minutes and retry the payment request.</p>
+      <div class="section-label">Frequently Asked Questions</div>
+      <p class="faq-q">What does Daraja error 1001 mean?</p>
+      <p class="faq-a">Daraja error 1001 means the subscriber already has a transaction in progress — wait 1–2 minutes and retry.</p>
+      <p class="faq-q">How do I fix Daraja error 1001?</p>
+      <p class="faq-a">Wait 1–2 minutes and retry the payment request.</p>
+      <p class="faq-q">What causes Daraja error 1001?</p>
+      <p class="faq-a">User has another M-Pesa transaction in progress; Previous STK push not yet resolved.</p>
       <div class="section-label">Related Errors</div>
       <ul class="related-list">
         <li><a href="1037.html">Error 1037: MSISDN Unreachable / No Response From User</a></li>
         <li><a href="1032.html">Error 1032: Request Cancelled by User</a></li>
       </ul>
-    </div>
+    </article>
 
     <p class="page-footer">
       Part of the <a href="https://ronnyabuto.github.io/daraja-error-codes/">Daraja Error Code Reference</a> —
-      open source on <a href="https://github.com/ronnyabuto/daraja-error-codes" target="_blank" rel="noopener">GitHub</a>.
+      first-hand notes from building and stress-testing
+      <a href="https://github.com/ronnyabuto/mpesa-stk" target="_blank" rel="noopener">mpesa-stk</a>
+      against the live Daraja sandbox. Open source on
+      <a href="https://github.com/ronnyabuto/daraja-error-codes" target="_blank" rel="noopener">GitHub</a>.
     </p>
-  </div>
+  </main>
 </body>
 </html>

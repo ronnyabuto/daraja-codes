@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><text x='16' y='24' font-family='system-ui,sans-serif' font-size='22' font-weight='700' fill='%23f85149' text-anchor='middle'>!</text></svg>">
   <title>Error 400.002.02: Bad Request — Invalid Request Parameter | Daraja M-Pesa Error Reference</title>
-  <meta name="description" content="Bad Request — Invalid Request Parameter: The API rejected the request because a field in the payload failed validation. The errorMessage suffix tells you w">
+  <meta name="description" content="Daraja error 400.002.02 is a request-validation error — read the errorMessage suffix; it names the exact invalid field (BusinessShortCode, Timestamp, Amoun">
   <meta name="robots" content="index, follow, max-snippet:-1">
   <link rel="canonical" href="https://ronnyabuto.github.io/daraja-error-codes/400.002.02.html">
   <script type="application/ld+json">
@@ -41,6 +41,38 @@
   <script type="application/ld+json">
 {
   "@context": "https://schema.org",
+  "@type": "FAQPage",
+  "mainEntity": [
+    {
+      "@type": "Question",
+      "name": "What does Daraja error 400.002.02 mean?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Daraja error 400.002.02 is a request-validation error — read the errorMessage suffix; it names the exact invalid field (BusinessShortCode, Timestamp, Amount, or CheckoutRequestID)."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "How do I fix Daraja error 400.002.02?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Read the full errorMessage field — the suffix after 'Bad Request - ' tells you exactly which field to fix. For BusinessShortCode: in Python requests change data=payload to json=payload and ensure Content-Type is application/json. For Timestamp: use the exact format YYYYMMDDHHmmss with no separators. For Amount: send a positive integer with no decimals. For CheckoutRequestID on the STK Query endpoint: wait a couple of seconds after initiation before your first query, and retry rather than treating it as a hard failure."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "What causes Daraja error 400.002.02?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Invalid BusinessShortCode: In Python, sending the payload using data=payload instead of json=payload causes the shortcode to be unparseable; Invalid BusinessShortCode: Shortcode sent as wrong type (string vs integer) or incorrect format; Invalid Timestamp: Timestamp field is in the wrong format — must be YYYYMMDDHHmmss (e.g. 20231207103045), not ISO 8601 or any other format; Invalid Amount: Amount is zero, negative, non-numeric, or formatted with decimal places when an integer is expected; Invalid CheckoutRequestID: querying the STK Push Query (stkpushquery) endpoint with a CheckoutRequestID that doesn't exist yet — common when you query within ~1–2s of initiation, before it has propagated — or with a malformed/wrong ID."
+      }
+    }
+  ]
+}
+  </script>
+  <script type="application/ld+json">
+{
+  "@context": "https://schema.org",
   "@type": "BreadcrumbList",
   "itemListElement": [
     {
@@ -52,6 +84,12 @@
     {
       "@type": "ListItem",
       "position": 2,
+      "name": "HTTP Errors",
+      "item": "https://ronnyabuto.github.io/daraja-error-codes/http-errors.html"
+    },
+    {
+      "@type": "ListItem",
+      "position": 3,
       "name": "Error 400.002.02: Bad Request — Invalid Request Parameter",
       "item": "https://ronnyabuto.github.io/daraja-error-codes/400.002.02.html"
     }
@@ -80,9 +118,20 @@
     .api-http     { background: #f8d7da; color: #721c24; }
     .api-c2b      { background: #d1ecf1; color: #0c5460; }
     .api-b2c      { background: #d4edda; color: #155724; }
+    .api-b2b      { background: #d4edda; color: #155724; }
     .api-go-live  { background: #e2d9f3; color: #4a235a; }
     h1 { font-size: 22px; font-weight: 700; margin: 0 0 12px; color: #111; }
     p  { font-size: 14px; color: #444; margin: 0 0 8px; }
+    .quick-answer {
+      background: #eef5ff; border-left: 3px solid #0066ff;
+      padding: 12px 14px; border-radius: 0 6px 6px 0;
+      font-size: 15px; color: #14315c; margin: 0 0 16px;
+    }
+    .verified {
+      display: inline-block; font-size: 12px; font-weight: 600;
+      color: #155724; background: #e8f6ec; border: 1px solid #b7e1c1;
+      padding: 3px 10px; border-radius: 12px; margin: 0 0 12px;
+    }
     .section-label {
       font-size: 11px; font-weight: 700; text-transform: uppercase;
       letter-spacing: 0.08em; color: #666; margin-top: 18px; margin-bottom: 6px;
@@ -99,10 +148,13 @@
       padding: 10px 14px; border-radius: 0 6px 6px 0;
       font-size: 13px; color: #555; margin: 0;
     }
-    .related-list { list-style: none; padding: 0; margin: 6px 0; }
-    .related-list li { margin-bottom: 4px; }
-    .related-list a { color: #0066ff; text-decoration: none; font-size: 14px; font-weight: 500; }
-    .related-list a:hover { text-decoration: underline; }
+    .faq-q { font-size: 14px; font-weight: 700; color: #222; margin: 12px 0 2px; }
+    .faq-a { font-size: 14px; color: #444; margin: 0 0 8px; }
+    .related-list, .hub-list { list-style: none; padding: 0; margin: 6px 0; }
+    .related-list li, .hub-list li { margin-bottom: 10px; }
+    .related-list a, .hub-list a { color: #0066ff; text-decoration: none; font-size: 14px; font-weight: 600; }
+    .related-list a:hover, .hub-list a:hover { text-decoration: underline; }
+    .hub-list .ha { display: block; font-size: 13px; font-weight: 400; color: #555; margin-top: 2px; }
     .page-footer { margin-top: 32px; font-size: 13px; color: #888; text-align: center; }
     .page-footer a { color: #0066ff; text-decoration: none; }
     .page-footer a:hover { text-decoration: underline; }
@@ -113,15 +165,16 @@
   </style>
 </head>
 <body>
-  <div class="container">
+  <main class="container">
     <a href="https://ronnyabuto.github.io/daraja-error-codes/" class="back">← All Daraja Error Codes</a>
 
-    <div class="card">
+    <article class="card">
       <div class="card-top-row">
         <span class="code">400.002.02</span>
-        <span class="api-badge api-http">HTTP</span>
+        <a class="api-badge api-http" href="http-errors.html">HTTP</a>
       </div>
       <h1>Bad Request — Invalid Request Parameter</h1>
+      <p class="quick-answer"><strong>Quick answer:</strong> Daraja error 400.002.02 is a request-validation error — read the errorMessage suffix; it names the exact invalid field (BusinessShortCode, Timestamp, Amount, or CheckoutRequestID).</p>
       <p>The API rejected the request because a field in the payload failed validation. The errorMessage suffix tells you which field is invalid (e.g. &#39;Bad Request - Invalid BusinessShortCode&#39;, &#39;Bad Request - Invalid Timestamp&#39;, &#39;Bad Request - Invalid Amount&#39;, &#39;Bad Request - Invalid CheckoutRequestID&#39;).</p>
 
       <div class="section-label">Likely Causes</div>
@@ -137,18 +190,28 @@
       <p class="fix-text">Read the full errorMessage field — the suffix after &#39;Bad Request - &#39; tells you exactly which field to fix. For BusinessShortCode: in Python requests change data=payload to json=payload and ensure Content-Type is application/json. For Timestamp: use the exact format YYYYMMDDHHmmss with no separators. For Amount: send a positive integer with no decimals. For CheckoutRequestID on the STK Query endpoint: wait a couple of seconds after initiation before your first query, and retry rather than treating it as a hard failure.</p>
       <div class="section-label">Notes</div>
       <p class="notes-text">This code is a generic Daraja request validation error. The errorMessage changes based on which field is invalid — always log the full errorMessage, not just the code. On the STK Query endpoint, an &#39;Invalid CheckoutRequestID&#39; suffix often just means you queried too early (see error 4999).</p>
+      <div class="section-label">Frequently Asked Questions</div>
+      <p class="faq-q">What does Daraja error 400.002.02 mean?</p>
+      <p class="faq-a">Daraja error 400.002.02 is a request-validation error — read the errorMessage suffix; it names the exact invalid field (BusinessShortCode, Timestamp, Amount, or CheckoutRequestID).</p>
+      <p class="faq-q">How do I fix Daraja error 400.002.02?</p>
+      <p class="faq-a">Read the full errorMessage field — the suffix after &#39;Bad Request - &#39; tells you exactly which field to fix. For BusinessShortCode: in Python requests change data=payload to json=payload and ensure Content-Type is application/json. For Timestamp: use the exact format YYYYMMDDHHmmss with no separators. For Amount: send a positive integer with no decimals. For CheckoutRequestID on the STK Query endpoint: wait a couple of seconds after initiation before your first query, and retry rather than treating it as a hard failure.</p>
+      <p class="faq-q">What causes Daraja error 400.002.02?</p>
+      <p class="faq-a">Invalid BusinessShortCode: In Python, sending the payload using data=payload instead of json=payload causes the shortcode to be unparseable; Invalid BusinessShortCode: Shortcode sent as wrong type (string vs integer) or incorrect format; Invalid Timestamp: Timestamp field is in the wrong format — must be YYYYMMDDHHmmss (e.g. 20231207103045), not ISO 8601 or any other format; Invalid Amount: Amount is zero, negative, non-numeric, or formatted with decimal places when an integer is expected; Invalid CheckoutRequestID: querying the STK Push Query (stkpushquery) endpoint with a CheckoutRequestID that doesn&#39;t exist yet — common when you query within ~1–2s of initiation, before it has propagated — or with a malformed/wrong ID.</p>
       <div class="section-label">Related Errors</div>
       <ul class="related-list">
         <li><a href="500.001.1001.html">Error 500.001.1001: Wrong Credentials / MerchantValidate Failed</a></li>
         <li><a href="401.003.01.html">Error 401.003.01: Invalid Access Token (OAuth Step)</a></li>
         <li><a href="4999.html">Error 4999: Transaction Still Processing (STK Query)</a></li>
       </ul>
-    </div>
+    </article>
 
     <p class="page-footer">
       Part of the <a href="https://ronnyabuto.github.io/daraja-error-codes/">Daraja Error Code Reference</a> —
-      open source on <a href="https://github.com/ronnyabuto/daraja-error-codes" target="_blank" rel="noopener">GitHub</a>.
+      first-hand notes from building and stress-testing
+      <a href="https://github.com/ronnyabuto/mpesa-stk" target="_blank" rel="noopener">mpesa-stk</a>
+      against the live Daraja sandbox. Open source on
+      <a href="https://github.com/ronnyabuto/daraja-error-codes" target="_blank" rel="noopener">GitHub</a>.
     </p>
-  </div>
+  </main>
 </body>
 </html>

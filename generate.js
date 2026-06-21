@@ -3,20 +3,22 @@
  * generate.js — Daraja Error Code Reference generator
  *
  * Reads errors.js (the single source of truth) and outputs:
- *   - errors.json    — machine-readable data for AI agents and tool callers
- *   - {slug}.html    — one standalone, indexable page per error code
- *   - sitemap.xml    — full sitemap with priority weights
- *   - llms.txt       — plain-text reference for LLMs that can only read text
+ *   - errors.json          — machine-readable data for AI agents and tool callers
+ *   - {slug}.html          — one standalone, indexable page per error code
+ *   - {api}-errors.html    — one hub page per API surface (topical clustering)
+ *   - sitemap.xml          — full sitemap with priority weights
+ *   - llms.txt             — plain-text reference for LLMs that can only read text
  *
  * Run: node generate.js
  * Re-run every time errors.js changes.
  *
- * SEO features per page:
- *   - Title: "Error {code}: {title}" (code front-loaded, matches developer search queries)
- *   - <meta name="robots" content="index, follow, max-snippet:-1">
- *   - TechArticle JSON-LD with dateModified
- *   - BreadcrumbList JSON-LD (produces breadcrumb trail in Google SERPs)
- *   - Related Errors section (internal linking for PageRank distribution + topical clustering)
+ * SEO / GEO features per page:
+ *   - Code front-loaded title ("Error {code}: {title}")
+ *   - One-sentence Quick Answer at the top (front-loaded for AI retrieval)
+ *   - FAQPage JSON-LD with visible matching Q&A (top GEO structured-data type)
+ *   - TechArticle + BreadcrumbList JSON-LD with dateModified (freshness signal)
+ *   - First-hand "verified in sandbox" provenance where we have original data
+ *   - API hub pages for topical clustering + internal linking
  */
 
 'use strict';
@@ -39,9 +41,42 @@ const byCode = Object.fromEntries(ERRORS.map(e => [e.code, e]));
 
 const BASE_URL = 'https://ronnyabuto.github.io/daraja-error-codes';
 const TODAY    = new Date().toISOString().slice(0, 10);
+const LIBRARY_URL = 'https://github.com/ronnyabuto/mpesa-stk';
 
 // High-traffic errors get sitemap priority 0.8; all others 0.7
 const HIGH_TRAFFIC = new Set(['1037', '1032', '400.002.02', '500.001.1001', '2001', '404.001.03']);
+
+// ── Quick Answers ────────────────────────────────────────────────────────────
+// One-sentence direct answer per code, front-loaded so AI engines lift it
+// verbatim. A code with no entry here falls back to the first sentence of its
+// description, so newly added codes still get a Quick Answer automatically.
+const QUICK_ANSWERS = {
+  "1037": "Daraja error 1037 means the STK prompt got no response from the user's phone — it is not fatal; ask the customer to check their phone and offer a retry.",
+  "1032": "Daraja error 1032 means the user cancelled the STK prompt — this is normal, not a bug; just let them re-initiate the payment.",
+  "1": "Daraja error 1 means the customer has insufficient M-Pesa balance (and no Fuliza overdraft) — ask them to top up and retry.",
+  "1001": "Daraja error 1001 means the subscriber already has a transaction in progress — wait 1–2 minutes and retry.",
+  "1025": "Daraja error 1025 means the STK prompt could not be sent — check that TransactionDesc is under 182 characters, then retry.",
+  "9999": "Daraja error 9999 is an alias of 1025 (STK prompt could not be sent) — handle it identically: check TransactionDesc length and retry.",
+  "Invalid Initiator Info": "On STK Push, 'Invalid Initiator Info' means the user entered the wrong M-Pesa PIN — prompt them to retry with the correct PIN.",
+  "400.002.02": "Daraja error 400.002.02 is a request-validation error — read the errorMessage suffix; it names the exact invalid field (BusinessShortCode, Timestamp, Amount, or CheckoutRequestID).",
+  "Invalid Access Token (Post Go-Live)": "If your token works in sandbox but is rejected after go-live, verify all four live credentials and that your app is approved — it is usually a Safaricom approval delay, not your code.",
+  "C2B Sandbox Callbacks Unreliable": "C2B sandbox callbacks fire only ~40% of the time by design — test C2B against a live deployment, not the sandbox.",
+  "2001": "B2C/B2B error 2001 means your operator SecurityCredential or InitiatorName is wrong — re-encrypt using the certificate from your own Daraja portal.",
+  "1019": "Daraja error 1019 means the STK prompt arrived but the user did not act in time (expired) — offer them a fresh STK push.",
+  "500.001.1001": "Daraja error 500.001.1001 usually means a Timestamp/Password mismatch — generate the Timestamp once and reuse it for both the Password and the request body.",
+  "401.003.01": "Error 401.003.01 means the access token was rejected at the OAuth step — regenerate it for the correct environment (sandbox vs production).",
+  "404.001.03": "Error 404.001.03 means your access token is expired or missing — cache the token and refresh before its 1-hour expiry instead of regenerating per request.",
+  "4999": "Daraja error 4999 is a transient 'still processing' status from the STK Query endpoint — it is not a failure; keep polling until a known terminal code, then reconcile.",
+  "429": "HTTP 429 'Spike arrest' means Daraja rate-limited you — back off and retry the same request with exponential backoff; do not drop it."
+};
+
+// ── First-hand provenance ────────────────────────────────────────────────────
+// Original data observed directly against the live sandbox. Signals first-hand
+// expertise (E-E-A-T) to both readers and AI engines, which cite original data.
+const VERIFIED = {
+  "4999": "Observed live on the Daraja sandbox, June 2026.",
+  "429":  "Observed live on the Daraja sandbox, June 2026 — 5 requests / 60s, burst 1."
+};
 
 // ── Helpers ──────────────────────────────────────────────────────────────────
 
@@ -64,6 +99,32 @@ function esc(str) {
     .replace(/'/g, '&#39;');
 }
 
+function firstSentence(text) {
+  const m = String(text).match(/^.*?[.!?](\s|$)/);
+  return (m ? m[0] : String(text)).trim();
+}
+
+function quickAnswerFor(entry) {
+  return QUICK_ANSWERS[entry.code] || firstSentence(entry.description);
+}
+
+// Q&A pairs rendered BOTH as visible content and as FAQPage JSON-LD — Google
+// requires structured-data Q&A to match what is visible on the page.
+function faqFor(entry) {
+  return [
+    { q: `What does Daraja error ${entry.code} mean?`, a: quickAnswerFor(entry) },
+    { q: `How do I fix Daraja error ${entry.code}?`,   a: entry.fix },
+    { q: `What causes Daraja error ${entry.code}?`,    a: entry.causes.join('; ') + '.' }
+  ];
+}
+
+function apiSlug(api) {
+  return api.toLowerCase().replace(/\s+/g, '-');
+}
+
+// Distinct API surfaces, in first-seen order, for hub pages
+const API_SURFACES = [...new Set(ERRORS.map(e => e.api))];
+
 // ── 1. errors.json ───────────────────────────────────────────────────────────
 
 fs.writeFileSync(
@@ -73,7 +134,7 @@ fs.writeFileSync(
 );
 console.log('✓  errors.json');
 
-// ── 2. Per-error HTML pages ──────────────────────────────────────────────────
+// ── Shared CSS ───────────────────────────────────────────────────────────────
 
 const SHARED_CSS = `
     *, *::before, *::after { box-sizing: border-box; }
@@ -97,9 +158,20 @@ const SHARED_CSS = `
     .api-http     { background: #f8d7da; color: #721c24; }
     .api-c2b      { background: #d1ecf1; color: #0c5460; }
     .api-b2c      { background: #d4edda; color: #155724; }
+    .api-b2b      { background: #d4edda; color: #155724; }
     .api-go-live  { background: #e2d9f3; color: #4a235a; }
     h1 { font-size: 22px; font-weight: 700; margin: 0 0 12px; color: #111; }
     p  { font-size: 14px; color: #444; margin: 0 0 8px; }
+    .quick-answer {
+      background: #eef5ff; border-left: 3px solid #0066ff;
+      padding: 12px 14px; border-radius: 0 6px 6px 0;
+      font-size: 15px; color: #14315c; margin: 0 0 16px;
+    }
+    .verified {
+      display: inline-block; font-size: 12px; font-weight: 600;
+      color: #155724; background: #e8f6ec; border: 1px solid #b7e1c1;
+      padding: 3px 10px; border-radius: 12px; margin: 0 0 12px;
+    }
     .section-label {
       font-size: 11px; font-weight: 700; text-transform: uppercase;
       letter-spacing: 0.08em; color: #666; margin-top: 18px; margin-bottom: 6px;
@@ -116,10 +188,13 @@ const SHARED_CSS = `
       padding: 10px 14px; border-radius: 0 6px 6px 0;
       font-size: 13px; color: #555; margin: 0;
     }
-    .related-list { list-style: none; padding: 0; margin: 6px 0; }
-    .related-list li { margin-bottom: 4px; }
-    .related-list a { color: #0066ff; text-decoration: none; font-size: 14px; font-weight: 500; }
-    .related-list a:hover { text-decoration: underline; }
+    .faq-q { font-size: 14px; font-weight: 700; color: #222; margin: 12px 0 2px; }
+    .faq-a { font-size: 14px; color: #444; margin: 0 0 8px; }
+    .related-list, .hub-list { list-style: none; padding: 0; margin: 6px 0; }
+    .related-list li, .hub-list li { margin-bottom: 10px; }
+    .related-list a, .hub-list a { color: #0066ff; text-decoration: none; font-size: 14px; font-weight: 600; }
+    .related-list a:hover, .hub-list a:hover { text-decoration: underline; }
+    .hub-list .ha { display: block; font-size: 13px; font-weight: 400; color: #555; margin-top: 2px; }
     .page-footer { margin-top: 32px; font-size: 13px; color: #888; text-align: center; }
     .page-footer a { color: #0066ff; text-decoration: none; }
     .page-footer a:hover { text-decoration: underline; }
@@ -129,19 +204,44 @@ const SHARED_CSS = `
     }
 `.trim();
 
+const FOOTER = `    <p class="page-footer">
+      Part of the <a href="${BASE_URL}/">Daraja Error Code Reference</a> —
+      first-hand notes from building and stress-testing
+      <a href="${LIBRARY_URL}" target="_blank" rel="noopener">mpesa-stk</a>
+      against the live Daraja sandbox. Open source on
+      <a href="https://github.com/ronnyabuto/daraja-error-codes" target="_blank" rel="noopener">GitHub</a>.
+    </p>`;
+
+// ── 2. Per-error HTML pages ──────────────────────────────────────────────────
+
 for (const entry of ERRORS) {
   const slug    = slugify(entry.code);
   const pageUrl = `${BASE_URL}/${slug}.html`;
-  const apiSlug = entry.api.toLowerCase().replace(/\s+/g, '-');
+  const apiS    = apiSlug(entry.api);
+  const hubUrl  = `${BASE_URL}/${apiS}-errors.html`;
+
+  const quickAnswer = quickAnswerFor(entry);
+  const verified    = VERIFIED[entry.code];
+  const faq         = faqFor(entry);
 
   // Title: error code front-loaded — matches how developers search ("daraja error 1037")
   const pageTitle = `Error ${entry.code}: ${entry.title} | Daraja M-Pesa Error Reference`;
 
   const causesItems = entry.causes.map(c => `        <li>${esc(c)}</li>`).join('\n');
 
+  const verifiedSection = verified
+    ? `\n      <p class="verified">✓ ${esc(verified)}</p>`
+    : '';
+
   const notesSection = entry.notes
     ? `\n      <div class="section-label">Notes</div>\n      <p class="notes-text">${esc(entry.notes)}</p>`
     : '';
+
+  // Visible FAQ — content matches the FAQPage JSON-LD below
+  const faqVisible = faq
+    .map(({ q, a }) => `      <p class="faq-q">${esc(q)}</p>\n      <p class="faq-a">${esc(a)}</p>`)
+    .join('\n');
+  const faqSection = `\n      <div class="section-label">Frequently Asked Questions</div>\n${faqVisible}`;
 
   // Related errors — internal links for PageRank distribution + topical clustering
   let relatedSection = '';
@@ -159,7 +259,7 @@ for (const entry of ERRORS) {
     }
   }
 
-  const metaDesc = `${entry.title}: ${entry.description}`.replace(/"/g, "'").slice(0, 155);
+  const metaDesc = quickAnswer.replace(/"/g, "'").slice(0, 155);
 
   // TechArticle JSON-LD — dateModified signals freshness to Google
   const techArticleJsonld = JSON.stringify({
@@ -178,13 +278,25 @@ for (const entry of ERRORS) {
     'keywords': `daraja error ${entry.code}, mpesa error ${entry.code}, ${entry.api.toLowerCase()} error`
   }, null, 2);
 
-  // BreadcrumbList JSON-LD — produces breadcrumb trail in Google SERPs
+  // FAQPage JSON-LD — each Q&A is a direct citation candidate for AI engines
+  const faqJsonld = JSON.stringify({
+    '@context': 'https://schema.org',
+    '@type':    'FAQPage',
+    'mainEntity': faq.map(({ q, a }) => ({
+      '@type': 'Question',
+      'name':  q,
+      'acceptedAnswer': { '@type': 'Answer', 'text': a }
+    }))
+  }, null, 2);
+
+  // BreadcrumbList JSON-LD — Home > {API} Errors > {code}
   const breadcrumbJsonld = JSON.stringify({
     '@context': 'https://schema.org',
     '@type':    'BreadcrumbList',
     'itemListElement': [
-      { '@type': 'ListItem', 'position': 1, 'name': 'Daraja Error Codes',  'item': `${BASE_URL}/` },
-      { '@type': 'ListItem', 'position': 2, 'name': `Error ${entry.code}: ${entry.title}`, 'item': pageUrl }
+      { '@type': 'ListItem', 'position': 1, 'name': 'Daraja Error Codes', 'item': `${BASE_URL}/` },
+      { '@type': 'ListItem', 'position': 2, 'name': `${entry.api} Errors`, 'item': hubUrl },
+      { '@type': 'ListItem', 'position': 3, 'name': `Error ${entry.code}: ${entry.title}`, 'item': pageUrl }
     ]
   }, null, 2);
 
@@ -202,6 +314,9 @@ for (const entry of ERRORS) {
 ${techArticleJsonld}
   </script>
   <script type="application/ld+json">
+${faqJsonld}
+  </script>
+  <script type="application/ld+json">
 ${breadcrumbJsonld}
   </script>
   <style>
@@ -209,15 +324,16 @@ ${breadcrumbJsonld}
   </style>
 </head>
 <body>
-  <div class="container">
+  <main class="container">
     <a href="${BASE_URL}/" class="back">← All Daraja Error Codes</a>
 
-    <div class="card">
+    <article class="card">
       <div class="card-top-row">
         <span class="code">${esc(entry.code)}</span>
-        <span class="api-badge api-${esc(apiSlug)}">${esc(entry.api)}</span>
+        <a class="api-badge api-${esc(apiS)}" href="${apiS}-errors.html">${esc(entry.api)}</a>
       </div>
       <h1>${esc(entry.title)}</h1>
+      <p class="quick-answer"><strong>Quick answer:</strong> ${esc(quickAnswer)}</p>${verifiedSection}
       <p>${esc(entry.description)}</p>
 
       <div class="section-label">Likely Causes</div>
@@ -226,14 +342,11 @@ ${causesItems}
       </ul>
 
       <div class="section-label">Fix</div>
-      <p class="fix-text">${esc(entry.fix)}</p>${notesSection}${relatedSection}
-    </div>
+      <p class="fix-text">${esc(entry.fix)}</p>${notesSection}${faqSection}${relatedSection}
+    </article>
 
-    <p class="page-footer">
-      Part of the <a href="${BASE_URL}/">Daraja Error Code Reference</a> —
-      open source on <a href="https://github.com/ronnyabuto/daraja-error-codes" target="_blank" rel="noopener">GitHub</a>.
-    </p>
-  </div>
+${FOOTER}
+  </main>
 </body>
 </html>`;
 
@@ -241,13 +354,107 @@ ${causesItems}
   console.log(`✓  ${slug}.html`);
 }
 
-// ── 3. sitemap.xml ───────────────────────────────────────────────────────────
+// ── 3. API hub pages (topical clustering + internal linking) ──────────────────
+
+const hubPages = [];
+
+for (const api of API_SURFACES) {
+  const apiS    = apiSlug(api);
+  const hubSlug = `${apiS}-errors`;
+  const hubUrl  = `${BASE_URL}/${hubSlug}.html`;
+  const entries = ERRORS.filter(e => e.api === api);
+
+  const pageTitle = `All ${api} Daraja Errors — Codes, Causes & Fixes`;
+  const metaDesc  = `Every Safaricom Daraja ${api} error code with a one-line answer, likely causes, and a copy-paste fix.`;
+
+  const listItems = entries.map(e => {
+    const s = slugify(e.code);
+    return `        <li><a href="${s}.html">Error ${esc(e.code)}: ${esc(e.title)}</a><span class="ha">${esc(quickAnswerFor(e))}</span></li>`;
+  }).join('\n');
+
+  // CollectionPage + ItemList JSON-LD
+  const collectionJsonld = JSON.stringify({
+    '@context': 'https://schema.org',
+    '@type':    'CollectionPage',
+    'name':     pageTitle,
+    'url':      hubUrl,
+    'dateModified': TODAY,
+    'about':    { '@type': 'Thing', 'name': `Safaricom Daraja ${api} API` },
+    'mainEntity': {
+      '@type': 'ItemList',
+      'itemListElement': entries.map((e, i) => ({
+        '@type':    'ListItem',
+        'position': i + 1,
+        'name':     `Error ${e.code}: ${e.title}`,
+        'url':      `${BASE_URL}/${slugify(e.code)}.html`
+      }))
+    }
+  }, null, 2);
+
+  const breadcrumbJsonld = JSON.stringify({
+    '@context': 'https://schema.org',
+    '@type':    'BreadcrumbList',
+    'itemListElement': [
+      { '@type': 'ListItem', 'position': 1, 'name': 'Daraja Error Codes', 'item': `${BASE_URL}/` },
+      { '@type': 'ListItem', 'position': 2, 'name': `${api} Errors`, 'item': hubUrl }
+    ]
+  }, null, 2);
+
+  const html = `<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><text x='16' y='24' font-family='system-ui,sans-serif' font-size='22' font-weight='700' fill='%23f85149' text-anchor='middle'>!</text></svg>">
+  <title>${esc(pageTitle)} | Daraja M-Pesa Error Reference</title>
+  <meta name="description" content="${esc(metaDesc)}">
+  <meta name="robots" content="index, follow, max-snippet:-1">
+  <link rel="canonical" href="${hubUrl}">
+  <script type="application/ld+json">
+${collectionJsonld}
+  </script>
+  <script type="application/ld+json">
+${breadcrumbJsonld}
+  </script>
+  <style>
+    ${SHARED_CSS}
+  </style>
+</head>
+<body>
+  <main class="container">
+    <a href="${BASE_URL}/" class="back">← All Daraja Error Codes</a>
+
+    <article class="card">
+      <h1>${esc(pageTitle)}</h1>
+      <p>${esc(metaDesc)}</p>
+
+      <div class="section-label">${esc(api)} Error Codes</div>
+      <ul class="hub-list">
+${listItems}
+      </ul>
+    </article>
+
+${FOOTER}
+  </main>
+</body>
+</html>`;
+
+  fs.writeFileSync(path.join(__dirname, `${hubSlug}.html`), html, 'utf8');
+  hubPages.push(hubSlug);
+  console.log(`✓  ${hubSlug}.html`);
+}
+
+// ── 4. sitemap.xml ───────────────────────────────────────────────────────────
 
 const urls = [
   `  <url><loc>${BASE_URL}/</loc><lastmod>${TODAY}</lastmod><priority>1.0</priority></url>`,
   `  <url><loc>${BASE_URL}/faq.html</loc><lastmod>${TODAY}</lastmod><priority>0.9</priority></url>`,
   `  <url><loc>${BASE_URL}/errors.json</loc><lastmod>${TODAY}</lastmod><priority>0.8</priority></url>`,
 ];
+
+for (const hubSlug of hubPages) {
+  urls.push(`  <url><loc>${BASE_URL}/${hubSlug}.html</loc><lastmod>${TODAY}</lastmod><priority>0.8</priority></url>`);
+}
 
 for (const entry of ERRORS) {
   const slug     = slugify(entry.code);
@@ -262,11 +469,12 @@ fs.writeFileSync(
 );
 console.log('✓  sitemap.xml');
 
-// ── 4. llms.txt ──────────────────────────────────────────────────────────────
+// ── 5. llms.txt ──────────────────────────────────────────────────────────────
 
 const rows = ERRORS.map(e => `${e.code} | ${e.api} | ${e.title} | ${e.causes.join('; ')} | ${e.fix}`);
 
 const perPageLinks = ERRORS.map(e => `${e.code}: ${BASE_URL}/${slugify(e.code)}.html`).join('\n');
+const hubLinks     = API_SURFACES.map(a => `${a} errors: ${BASE_URL}/${apiSlug(a)}-errors.html`).join('\n');
 
 const llms = `# Daraja M-Pesa API Error Code Reference
 # Maintained by Ronny Nyabuto
@@ -295,6 +503,10 @@ FORMAT (pipe-delimited): code | api | title | causes (semicolon-separated) | fix
 ${rows.join('\n')}
 
 ---
+API HUB PAGES:
+${hubLinks}
+
+---
 PER-ERROR DETAIL PAGES:
 ${perPageLinks}
 `;
@@ -302,4 +514,4 @@ ${perPageLinks}
 fs.writeFileSync(path.join(__dirname, 'llms.txt'), llms, 'utf8');
 console.log('✓  llms.txt');
 
-console.log(`\nDone — ${ERRORS.length} error pages + errors.json + sitemap.xml + llms.txt`);
+console.log(`\nDone — ${ERRORS.length} error pages + ${hubPages.length} hub pages + errors.json + sitemap.xml + llms.txt`);

@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><text x='16' y='24' font-family='system-ui,sans-serif' font-size='22' font-weight='700' fill='%23f85149' text-anchor='middle'>!</text></svg>">
   <title>Error 401.003.01: Invalid Access Token (OAuth Step) | Daraja M-Pesa Error Reference</title>
-  <meta name="description" content="Invalid Access Token (OAuth Step): The access token is invalid during the OAuth authorization step itself. Different from 404.001.03, which occurs when a v">
+  <meta name="description" content="Error 401.003.01 means the access token was rejected at the OAuth step — regenerate it for the correct environment (sandbox vs production).">
   <meta name="robots" content="index, follow, max-snippet:-1">
   <link rel="canonical" href="https://ronnyabuto.github.io/daraja-error-codes/401.003.01.html">
   <script type="application/ld+json">
@@ -41,6 +41,38 @@
   <script type="application/ld+json">
 {
   "@context": "https://schema.org",
+  "@type": "FAQPage",
+  "mainEntity": [
+    {
+      "@type": "Question",
+      "name": "What does Daraja error 401.003.01 mean?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Error 401.003.01 means the access token was rejected at the OAuth step — regenerate it for the correct environment (sandbox vs production)."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "How do I fix Daraja error 401.003.01?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Regenerate a fresh access token using the correct Consumer Key and Secret for the target environment (sandbox vs production). Ensure you are calling the correct base URL: https://sandbox.safaricom.co.ke for sandbox and https://api.safaricom.co.ke for production. Log the raw token value to confirm it is not truncated."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "What causes Daraja error 401.003.01?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Token was generated in sandbox but used against the production OAuth endpoint or vice versa; Token value is malformed or truncated (e.g. copy-paste error); Token was revoked or the Daraja app credentials were rotated after the token was issued."
+      }
+    }
+  ]
+}
+  </script>
+  <script type="application/ld+json">
+{
+  "@context": "https://schema.org",
   "@type": "BreadcrumbList",
   "itemListElement": [
     {
@@ -52,6 +84,12 @@
     {
       "@type": "ListItem",
       "position": 2,
+      "name": "HTTP Errors",
+      "item": "https://ronnyabuto.github.io/daraja-error-codes/http-errors.html"
+    },
+    {
+      "@type": "ListItem",
+      "position": 3,
       "name": "Error 401.003.01: Invalid Access Token (OAuth Step)",
       "item": "https://ronnyabuto.github.io/daraja-error-codes/401.003.01.html"
     }
@@ -80,9 +118,20 @@
     .api-http     { background: #f8d7da; color: #721c24; }
     .api-c2b      { background: #d1ecf1; color: #0c5460; }
     .api-b2c      { background: #d4edda; color: #155724; }
+    .api-b2b      { background: #d4edda; color: #155724; }
     .api-go-live  { background: #e2d9f3; color: #4a235a; }
     h1 { font-size: 22px; font-weight: 700; margin: 0 0 12px; color: #111; }
     p  { font-size: 14px; color: #444; margin: 0 0 8px; }
+    .quick-answer {
+      background: #eef5ff; border-left: 3px solid #0066ff;
+      padding: 12px 14px; border-radius: 0 6px 6px 0;
+      font-size: 15px; color: #14315c; margin: 0 0 16px;
+    }
+    .verified {
+      display: inline-block; font-size: 12px; font-weight: 600;
+      color: #155724; background: #e8f6ec; border: 1px solid #b7e1c1;
+      padding: 3px 10px; border-radius: 12px; margin: 0 0 12px;
+    }
     .section-label {
       font-size: 11px; font-weight: 700; text-transform: uppercase;
       letter-spacing: 0.08em; color: #666; margin-top: 18px; margin-bottom: 6px;
@@ -99,10 +148,13 @@
       padding: 10px 14px; border-radius: 0 6px 6px 0;
       font-size: 13px; color: #555; margin: 0;
     }
-    .related-list { list-style: none; padding: 0; margin: 6px 0; }
-    .related-list li { margin-bottom: 4px; }
-    .related-list a { color: #0066ff; text-decoration: none; font-size: 14px; font-weight: 500; }
-    .related-list a:hover { text-decoration: underline; }
+    .faq-q { font-size: 14px; font-weight: 700; color: #222; margin: 12px 0 2px; }
+    .faq-a { font-size: 14px; color: #444; margin: 0 0 8px; }
+    .related-list, .hub-list { list-style: none; padding: 0; margin: 6px 0; }
+    .related-list li, .hub-list li { margin-bottom: 10px; }
+    .related-list a, .hub-list a { color: #0066ff; text-decoration: none; font-size: 14px; font-weight: 600; }
+    .related-list a:hover, .hub-list a:hover { text-decoration: underline; }
+    .hub-list .ha { display: block; font-size: 13px; font-weight: 400; color: #555; margin-top: 2px; }
     .page-footer { margin-top: 32px; font-size: 13px; color: #888; text-align: center; }
     .page-footer a { color: #0066ff; text-decoration: none; }
     .page-footer a:hover { text-decoration: underline; }
@@ -113,15 +165,16 @@
   </style>
 </head>
 <body>
-  <div class="container">
+  <main class="container">
     <a href="https://ronnyabuto.github.io/daraja-error-codes/" class="back">← All Daraja Error Codes</a>
 
-    <div class="card">
+    <article class="card">
       <div class="card-top-row">
         <span class="code">401.003.01</span>
-        <span class="api-badge api-http">HTTP</span>
+        <a class="api-badge api-http" href="http-errors.html">HTTP</a>
       </div>
       <h1>Invalid Access Token (OAuth Step)</h1>
+      <p class="quick-answer"><strong>Quick answer:</strong> Error 401.003.01 means the access token was rejected at the OAuth step — regenerate it for the correct environment (sandbox vs production).</p>
       <p>The access token is invalid during the OAuth authorization step itself. Different from 404.001.03, which occurs when a valid-looking but expired token is used on an API call — this one fires when the token is rejected at the authorization layer.</p>
 
       <div class="section-label">Likely Causes</div>
@@ -135,17 +188,27 @@
       <p class="fix-text">Regenerate a fresh access token using the correct Consumer Key and Secret for the target environment (sandbox vs production). Ensure you are calling the correct base URL: https://sandbox.safaricom.co.ke for sandbox and https://api.safaricom.co.ke for production. Log the raw token value to confirm it is not truncated.</p>
       <div class="section-label">Notes</div>
       <p class="notes-text">Confirmed in official Safaricom GitHub issue thread (LNMOnlineAndroidSample#11). Distinct from 404.001.03 — both relate to token problems, but 401.003.01 is an invalid token during authorization and 404.001.03 is an expired token during API calls. Handle both identically in code: regenerate and retry.</p>
+      <div class="section-label">Frequently Asked Questions</div>
+      <p class="faq-q">What does Daraja error 401.003.01 mean?</p>
+      <p class="faq-a">Error 401.003.01 means the access token was rejected at the OAuth step — regenerate it for the correct environment (sandbox vs production).</p>
+      <p class="faq-q">How do I fix Daraja error 401.003.01?</p>
+      <p class="faq-a">Regenerate a fresh access token using the correct Consumer Key and Secret for the target environment (sandbox vs production). Ensure you are calling the correct base URL: https://sandbox.safaricom.co.ke for sandbox and https://api.safaricom.co.ke for production. Log the raw token value to confirm it is not truncated.</p>
+      <p class="faq-q">What causes Daraja error 401.003.01?</p>
+      <p class="faq-a">Token was generated in sandbox but used against the production OAuth endpoint or vice versa; Token value is malformed or truncated (e.g. copy-paste error); Token was revoked or the Daraja app credentials were rotated after the token was issued.</p>
       <div class="section-label">Related Errors</div>
       <ul class="related-list">
         <li><a href="404.001.03.html">Error 404.001.03: Access Token Expired or Missing</a></li>
         <li><a href="500.001.1001.html">Error 500.001.1001: Wrong Credentials / MerchantValidate Failed</a></li>
       </ul>
-    </div>
+    </article>
 
     <p class="page-footer">
       Part of the <a href="https://ronnyabuto.github.io/daraja-error-codes/">Daraja Error Code Reference</a> —
-      open source on <a href="https://github.com/ronnyabuto/daraja-error-codes" target="_blank" rel="noopener">GitHub</a>.
+      first-hand notes from building and stress-testing
+      <a href="https://github.com/ronnyabuto/mpesa-stk" target="_blank" rel="noopener">mpesa-stk</a>
+      against the live Daraja sandbox. Open source on
+      <a href="https://github.com/ronnyabuto/daraja-error-codes" target="_blank" rel="noopener">GitHub</a>.
     </p>
-  </div>
+  </main>
 </body>
 </html>

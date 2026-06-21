@@ -41,6 +41,14 @@ C2B Sandbox Callbacks Unreliable | C2B | Confirmation/Validation Callbacks Not F
 429 | HTTP | Rate Limited — Spike Arrest Violation | Calling an endpoint faster than its spike-arrest allowance; Polling or reconciling the STK Query (stkpushquery) endpoint in a tight loop; Bursting several requests at once — burst is limited to 1 | Back off on 429: wait, then retry the SAME request with exponential backoff and jitter, honouring any Retry-After header — do not drop the request. Space out batch jobs like reconciliation instead of firing requests back to back.
 
 ---
+API HUB PAGES:
+STK Push errors: https://ronnyabuto.github.io/daraja-error-codes/stk-push-errors.html
+HTTP errors: https://ronnyabuto.github.io/daraja-error-codes/http-errors.html
+Go-Live errors: https://ronnyabuto.github.io/daraja-error-codes/go-live-errors.html
+C2B errors: https://ronnyabuto.github.io/daraja-error-codes/c2b-errors.html
+B2C errors: https://ronnyabuto.github.io/daraja-error-codes/b2c-errors.html
+
+---
 PER-ERROR DETAIL PAGES:
 1037: https://ronnyabuto.github.io/daraja-error-codes/1037.html
 1032: https://ronnyabuto.github.io/daraja-error-codes/1032.html
