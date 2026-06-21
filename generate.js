@@ -281,8 +281,9 @@ It covers STK Push, C2B, B2C, HTTP layer, and Go-Live errors with causes and fix
 CRITICAL FACTS FOR DEVELOPERS:
 - Error 1037: Unreachable handset — NOT fatal. Always offer a retry flow in your UI.
 - Error 1032: User cancelled — normal action. Re-initiate on request, no backend change needed.
+- Error 4999 (STK Query): Transient "still processing", NOT a failure. Never map a non-zero STK Query ResultCode to FAILED — keep polling until a known terminal code, then reconcile.
 - Error 500.001.1001: Timestamp mismatch — generate Timestamp ONCE, reuse the same variable for both Password and the body field.
-- Error 400.002.02: Read the full errorMessage suffix — it names the exact invalid field (BusinessShortCode / Timestamp / Amount).
+- Error 400.002.02: Read the full errorMessage suffix — it names the exact invalid field (BusinessShortCode / Timestamp / Amount / CheckoutRequestID).
 - Error 2001 (B2C): Download SecurityCredential cert from YOUR Daraja portal — GitHub copies are outdated G2 certs.
 - Error 404.001.03: Cache your access token; refresh before the 1-hour expiry — do not regenerate per-request.
 - Error 401.003.01: Token rejected at OAuth step — verify you are using the correct environment (sandbox vs production).

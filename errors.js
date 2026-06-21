@@ -100,16 +100,17 @@ const ERRORS = [
     title: "Bad Request — Invalid Request Parameter",
     api: "HTTP",
     category: "request",
-    description: "The API rejected the request because a field in the payload failed validation. The errorMessage suffix tells you which field is invalid (e.g. 'Bad Request - Invalid BusinessShortCode', 'Bad Request - Invalid Timestamp', 'Bad Request - Invalid Amount').",
+    description: "The API rejected the request because a field in the payload failed validation. The errorMessage suffix tells you which field is invalid (e.g. 'Bad Request - Invalid BusinessShortCode', 'Bad Request - Invalid Timestamp', 'Bad Request - Invalid Amount', 'Bad Request - Invalid CheckoutRequestID').",
     causes: [
       "Invalid BusinessShortCode: In Python, sending the payload using data=payload instead of json=payload causes the shortcode to be unparseable",
       "Invalid BusinessShortCode: Shortcode sent as wrong type (string vs integer) or incorrect format",
       "Invalid Timestamp: Timestamp field is in the wrong format — must be YYYYMMDDHHmmss (e.g. 20231207103045), not ISO 8601 or any other format",
-      "Invalid Amount: Amount is zero, negative, non-numeric, or formatted with decimal places when an integer is expected"
+      "Invalid Amount: Amount is zero, negative, non-numeric, or formatted with decimal places when an integer is expected",
+      "Invalid CheckoutRequestID: querying the STK Push Query (stkpushquery) endpoint with a CheckoutRequestID that doesn't exist yet — common when you query within ~1–2s of initiation, before it has propagated — or with a malformed/wrong ID"
     ],
-    fix: "Read the full errorMessage field — the suffix after 'Bad Request - ' tells you exactly which field to fix. For BusinessShortCode: in Python requests change data=payload to json=payload and ensure Content-Type is application/json. For Timestamp: use the exact format YYYYMMDDHHmmss with no separators. For Amount: send a positive integer with no decimals.",
-    notes: "This code is a generic Daraja request validation error. The errorMessage changes based on which field is invalid — always log the full errorMessage, not just the code.",
-    related: ["500.001.1001", "401.003.01"]
+    fix: "Read the full errorMessage field — the suffix after 'Bad Request - ' tells you exactly which field to fix. For BusinessShortCode: in Python requests change data=payload to json=payload and ensure Content-Type is application/json. For Timestamp: use the exact format YYYYMMDDHHmmss with no separators. For Amount: send a positive integer with no decimals. For CheckoutRequestID on the STK Query endpoint: wait a couple of seconds after initiation before your first query, and retry rather than treating it as a hard failure.",
+    notes: "This code is a generic Daraja request validation error. The errorMessage changes based on which field is invalid — always log the full errorMessage, not just the code. On the STK Query endpoint, an 'Invalid CheckoutRequestID' suffix often just means you queried too early (see error 4999).",
+    related: ["500.001.1001", "401.003.01", "4999"]
   },
   {
     code: "Invalid Access Token (Post Go-Live)",
@@ -219,5 +220,34 @@ const ERRORS = [
     fix: "Implement token caching with automatic refresh: store the token and its expiry time, and regenerate it before it expires rather than on every request. A safe pattern is to refresh the token when it is within 5 minutes of expiry. Ensure your Authorization header is formatted exactly as: 'Bearer <token>' with a space between Bearer and the token value.",
     notes: "This is different from the Go-Live access token issue in this list. That one happens because Safaricom has not yet internally approved the live app. This one (404.001.03) happens during normal operation when token lifecycle is not managed correctly.",
     related: ["401.003.01", "500.001.1001"]
+  },
+  {
+    code: "4999",
+    title: "Transaction Still Processing (STK Query)",
+    api: "STK Push",
+    category: "request",
+    description: "An undocumented, transient ResultCode returned by the STK Push Query (stkpushquery) endpoint when you query a transaction that has not yet settled. It is NOT a terminal failure — query again a few seconds later and the same transaction returns its real result code (0, 1037, 1032, etc.).",
+    causes: [
+      "You queried the STK Query endpoint too soon after initiation, before the transaction reached a final state",
+      "The transaction is genuinely still in flight — the user has not finished entering their PIN"
+    ],
+    fix: "Treat 4999 as 'keep waiting', never as 'failed'. Do not write the payment to a terminal FAILED state on this code. Settle only on a known terminal ResultCode; for 4999 or any unrecognised code, keep polling until the transaction resolves, then fall back to reconciliation if it never does.",
+    notes: "Not listed in Safaricom's official documentation. Observed live in the sandbox (June 2026): a query ~3s after initiation returned 4999, while a query ~8s later returned the terminal 1037. Mapping every non-zero STK Query ResultCode to FAILED is a common, dangerous bug — it can mark an in-progress (and ultimately successful) payment as failed.",
+    related: ["1037", "1019", "400.002.02"]
+  },
+  {
+    code: "429",
+    title: "Rate Limited — Spike Arrest Violation",
+    api: "HTTP",
+    category: "request",
+    description: "The Daraja API gateway (Apigee) rejected the request with HTTP 429 because you exceeded its rate limit. The body is an Apigee fault — not normal Daraja JSON — with errorcode 'policies.ratelimit.SpikeArrestViolation' and a faultstring describing the allowed MessageRate.",
+    causes: [
+      "Calling an endpoint faster than its spike-arrest allowance",
+      "Polling or reconciling the STK Query (stkpushquery) endpoint in a tight loop",
+      "Bursting several requests at once — burst is limited to 1"
+    ],
+    fix: "Back off on 429: wait, then retry the SAME request with exponential backoff and jitter, honouring any Retry-After header — do not drop the request. Space out batch jobs like reconciliation instead of firing requests back to back.",
+    notes: "Observed live on the STK Query endpoint in the sandbox (June 2026): MessageRate{messagesPerPeriod=5, periodInMicroseconds=60000000, maxBurstMessageCount=1.0} — i.e. 5 requests per 60 seconds, burst 1. The exact limit is not published and may differ per endpoint and in production. React to the 429 rather than assuming a fixed rate.",
+    related: ["400.002.02", "404.001.03"]
   }
 ];

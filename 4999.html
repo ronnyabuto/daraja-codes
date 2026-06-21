@@ -4,18 +4,18 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><text x='16' y='24' font-family='system-ui,sans-serif' font-size='22' font-weight='700' fill='%23f85149' text-anchor='middle'>!</text></svg>">
-  <title>Error 1019: Transaction Expired | Daraja M-Pesa Error Reference</title>
-  <meta name="description" content="Transaction Expired: The STK Push transaction exceeded the allowable processing time before the user responded.">
+  <title>Error 4999: Transaction Still Processing (STK Query) | Daraja M-Pesa Error Reference</title>
+  <meta name="description" content="Transaction Still Processing (STK Query): An undocumented, transient ResultCode returned by the STK Push Query (stkpushquery) endpoint when you query a tra">
   <meta name="robots" content="index, follow, max-snippet:-1">
-  <link rel="canonical" href="https://ronnyabuto.github.io/daraja-error-codes/1019.html">
+  <link rel="canonical" href="https://ronnyabuto.github.io/daraja-error-codes/4999.html">
   <script type="application/ld+json">
 {
   "@context": "https://schema.org",
   "@type": "TechArticle",
-  "headline": "Error 1019: Transaction Expired",
-  "description": "The STK Push transaction exceeded the allowable processing time before the user responded.",
+  "headline": "Error 4999: Transaction Still Processing (STK Query)",
+  "description": "An undocumented, transient ResultCode returned by the STK Push Query (stkpushquery) endpoint when you query a transaction that has not yet settled. It is NOT a terminal failure — query again a few seconds later and the same transaction returns its real result code (0, 1037, 1032, etc.).",
   "dateModified": "2026-06-21",
-  "url": "https://ronnyabuto.github.io/daraja-error-codes/1019.html",
+  "url": "https://ronnyabuto.github.io/daraja-error-codes/4999.html",
   "author": {
     "@type": "Person",
     "name": "Ronny Nyabuto"
@@ -35,7 +35,7 @@
       "name": "STK Push"
     }
   ],
-  "keywords": "daraja error 1019, mpesa error 1019, stk push error"
+  "keywords": "daraja error 4999, mpesa error 4999, stk push error"
 }
   </script>
   <script type="application/ld+json">
@@ -52,8 +52,8 @@
     {
       "@type": "ListItem",
       "position": 2,
-      "name": "Error 1019: Transaction Expired",
-      "item": "https://ronnyabuto.github.io/daraja-error-codes/1019.html"
+      "name": "Error 4999: Transaction Still Processing (STK Query)",
+      "item": "https://ronnyabuto.github.io/daraja-error-codes/4999.html"
     }
   ]
 }
@@ -118,26 +118,27 @@
 
     <div class="card">
       <div class="card-top-row">
-        <span class="code">1019</span>
+        <span class="code">4999</span>
         <span class="api-badge api-stk-push">STK Push</span>
       </div>
-      <h1>Transaction Expired</h1>
-      <p>The STK Push transaction exceeded the allowable processing time before the user responded.</p>
+      <h1>Transaction Still Processing (STK Query)</h1>
+      <p>An undocumented, transient ResultCode returned by the STK Push Query (stkpushquery) endpoint when you query a transaction that has not yet settled. It is NOT a terminal failure — query again a few seconds later and the same transaction returns its real result code (0, 1037, 1032, etc.).</p>
 
       <div class="section-label">Likely Causes</div>
       <ul>
-        <li>User did not respond to the STK prompt before it timed out (typically 1–3 minutes depending on phone model)</li>
-        <li>User&#39;s phone was slow to display the prompt due to network lag</li>
+        <li>You queried the STK Query endpoint too soon after initiation, before the transaction reached a final state</li>
+        <li>The transaction is genuinely still in flight — the user has not finished entering their PIN</li>
       </ul>
 
       <div class="section-label">Fix</div>
-      <p class="fix-text">Inform the user their payment request expired and offer them a button to initiate a fresh STK push. Implement a polling loop using the STK Push Query API (stkpushquery endpoint) to catch this state proactively before relying solely on the callback.</p>
+      <p class="fix-text">Treat 4999 as &#39;keep waiting&#39;, never as &#39;failed&#39;. Do not write the payment to a terminal FAILED state on this code. Settle only on a known terminal ResultCode; for 4999 or any unrecognised code, keep polling until the transaction resolves, then fall back to reconciliation if it never does.</p>
       <div class="section-label">Notes</div>
-      <p class="notes-text">Different from error 1037 — 1037 means the prompt never reached the phone. 1019 means the prompt arrived but the user did not act on it in time.</p>
+      <p class="notes-text">Not listed in Safaricom&#39;s official documentation. Observed live in the sandbox (June 2026): a query ~3s after initiation returned 4999, while a query ~8s later returned the terminal 1037. Mapping every non-zero STK Query ResultCode to FAILED is a common, dangerous bug — it can mark an in-progress (and ultimately successful) payment as failed.</p>
       <div class="section-label">Related Errors</div>
       <ul class="related-list">
         <li><a href="1037.html">Error 1037: MSISDN Unreachable / No Response From User</a></li>
-        <li><a href="1032.html">Error 1032: Request Cancelled by User</a></li>
+        <li><a href="1019.html">Error 1019: Transaction Expired</a></li>
+        <li><a href="400.002.02.html">Error 400.002.02: Bad Request — Invalid Request Parameter</a></li>
       </ul>
     </div>
 
